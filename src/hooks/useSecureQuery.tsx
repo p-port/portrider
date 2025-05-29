@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useInputSanitization } from './useInputSanitization';
+import { useEffect } from 'react';
 
 interface SecureQueryOptions {
   queryKey: string[];
@@ -20,22 +21,28 @@ interface SecureMutationOptions {
 export function useSecureQuery({ queryKey, queryFn, onError, enabled = true }: SecureQueryOptions) {
   const { toast } = useToast();
 
-  return useQuery({
+  const query = useQuery({
     queryKey,
     queryFn,
     enabled,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    onError: (error: Error) => {
-      console.error('Query error:', error);
-      onError?.(error);
+  });
+
+  // Handle errors with useEffect since onError is not supported in v5
+  useEffect(() => {
+    if (query.error) {
+      console.error('Query error:', query.error);
+      onError?.(query.error);
       toast({
         title: 'Error',
         description: 'Failed to load data. Please try again.',
         variant: 'destructive',
       });
-    },
-  });
+    }
+  }, [query.error, onError, toast]);
+
+  return query;
 }
 
 export function useSecureMutation({ mutationFn, onSuccess, onError, invalidateQueries }: SecureMutationOptions) {
