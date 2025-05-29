@@ -72,7 +72,6 @@ export function useGlobalSearch(searchTerm: string) {
       const { data: posts } = await supabase
         .from('forum_posts')
         .select('id, title, content, forum_categories(name)')
-        .eq('is_active', true)
         .limit(10);
 
       if (posts) {
@@ -85,7 +84,7 @@ export function useGlobalSearch(searchTerm: string) {
               type: 'forum_post',
               url: `/forum/post/${post.id}`,
               metadata: {
-                category: post.forum_categories?.name
+                category: (post.forum_categories as any)?.name
               }
             });
           }
@@ -96,7 +95,6 @@ export function useGlobalSearch(searchTerm: string) {
       const { data: businesses } = await supabase
         .from('businesses')
         .select('id, name, description, location')
-        .eq('is_active', true)
         .limit(10);
 
       if (businesses) {
@@ -116,19 +114,19 @@ export function useGlobalSearch(searchTerm: string) {
         });
       }
 
-      // Search products
+      // Search products - using 'title' instead of 'name'
       const { data: products } = await supabase
         .from('products')
-        .select('id, name, description, price, businesses(name)')
+        .select('id, title, description, price, businesses(name)')
         .eq('is_active', true)
         .limit(10);
 
       if (products) {
         products.forEach(product => {
-          if (fuzzyMatch(product.name, searchTerm) || fuzzyMatch(product.description || '', searchTerm)) {
+          if (fuzzyMatch(product.title, searchTerm) || fuzzyMatch(product.description || '', searchTerm)) {
             results.push({
               id: product.id,
-              title: product.name,
+              title: product.title,
               description: product.description || '',
               type: 'product',
               url: `/marketplace`,
