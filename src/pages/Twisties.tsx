@@ -65,9 +65,9 @@ const Twisties = () => {
         // Check if profiles exists and is not an error object
         let profileData = defaultProfileData;
         if (route.profiles && 
-            route.profiles !== null &&
             typeof route.profiles === 'object' && 
             !('error' in route.profiles)) {
+          // Safe to cast since we've verified it's not null and is an object without error
           profileData = route.profiles as { username: string | null; first_name: string | null; last_name: string | null };
         }
         
