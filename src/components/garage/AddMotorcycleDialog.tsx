@@ -56,6 +56,32 @@ export function AddMotorcycleDialog({ open, onOpenChange, onSuccess }: AddMotorc
         .single();
 
       if (error) throw error;
+
+      // Trigger external job creation
+      try {
+        const { error: jobError } = await supabase.functions.invoke('create-external-job', {
+          body: {
+            motorcycle_id: result.id,
+            user_id: user.id,
+            vin: data.vin
+          }
+        });
+
+        if (jobError) {
+          console.error('Error creating external job:', jobError);
+          // Don't fail the motorcycle creation if job creation fails
+          toast({
+            title: 'Warning',
+            description: 'Motorcycle added but external job creation failed.',
+            variant: 'destructive',
+          });
+        } else {
+          console.log('External job created successfully');
+        }
+      } catch (jobError) {
+        console.error('Error invoking external job function:', jobError);
+      }
+
       return result;
     },
     onSuccess: () => {
