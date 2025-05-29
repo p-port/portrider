@@ -1,4 +1,3 @@
-
 import { useAuth } from '@/hooks/useAuth';
 import { DashboardCard } from './DashboardCard';
 import { Button } from '@/components/ui/button';
@@ -15,6 +14,7 @@ import {
   Settings
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 const dashboardItems = [
   {
@@ -22,6 +22,7 @@ const dashboardItems = [
     title: 'My Garage',
     description: 'Manage your motorcycles and maintenance records',
     icon: Bike,
+    route: '/garage',
   },
   {
     id: 'forums',
@@ -64,12 +65,17 @@ const dashboardItems = [
 export function Dashboard() {
   const { user, profile, signOut } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleCardClick = (cardId: string) => {
-    toast({
-      title: "Feature Coming Soon",
-      description: `${cardId.replace('_', ' ')} feature is currently being developed.`,
-    });
+  const handleCardClick = (cardId: string, route?: string) => {
+    if (route) {
+      navigate(route);
+    } else {
+      toast({
+        title: "Feature Coming Soon",
+        description: `${cardId.replace('_', ' ')} feature is currently being developed.`,
+      });
+    }
   };
 
   const handleSignOut = async () => {
@@ -97,7 +103,7 @@ export function Dashboard() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
               <Bike className="h-8 w-8 text-purple-600" />
               <h1 className="text-2xl font-bold text-gray-900">Port Rider</h1>
             </div>
@@ -146,7 +152,7 @@ export function Dashboard() {
               title={item.title}
               description={item.description}
               icon={item.icon}
-              onClick={() => handleCardClick(item.id)}
+              onClick={() => handleCardClick(item.id, item.route)}
               className="bg-white"
             />
           ))}
