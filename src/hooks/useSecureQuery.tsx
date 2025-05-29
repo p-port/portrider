@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -27,16 +26,14 @@ export function useSecureQuery({ queryKey, queryFn, onError, enabled = true }: S
     enabled,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    meta: {
-      onError: (error: Error) => {
-        console.error('Query error:', error);
-        onError?.(error);
-        toast({
-          title: 'Error',
-          description: 'Failed to load data. Please try again.',
-          variant: 'destructive',
-        });
-      },
+    onError: (error: Error) => {
+      console.error('Query error:', error);
+      onError?.(error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load data. Please try again.',
+        variant: 'destructive',
+      });
     },
   });
 }
