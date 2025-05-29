@@ -22,7 +22,7 @@ const Twisties = () => {
         .from('routes')
         .select(`
           *,
-          profiles(username, first_name, last_name)
+          profiles!routes_created_by_fkey(username, first_name, last_name)
         `)
         .eq('is_active', true);
 
@@ -52,13 +52,25 @@ const Twisties = () => {
       }
 
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        console.log('Supabase query error:', error);
+        throw error;
+      }
       
-      // Transform the data to handle cases where profile data might be missing
-      return data?.map(route => ({
-        ...route,
-        profiles: route.profiles || { username: null, first_name: null, last_name: null }
-      })) || [];
+      // Transform the data to handle cases where profile data might be missing or is an error
+      return data?.map(route => {
+        // Check if profiles is an error object or actual data
+        let profileData = { username: null, first_name: null, last_name: null };
+        
+        if (route.profiles && typeof route.profiles === 'object' && !('error' in route.profiles)) {
+          profileData = route.profiles;
+        }
+        
+        return {
+          ...route,
+          profiles: profileData
+        };
+      }) || [];
     },
   });
 
