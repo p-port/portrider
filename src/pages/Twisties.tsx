@@ -63,7 +63,7 @@ const Twisties = () => {
         const defaultProfileData = { username: null, first_name: null, last_name: null };
         
         // Check if profiles exists and is not an error object
-        const profileData = (route.profiles && 
+        const profileData = (route.profiles !== null && 
                            typeof route.profiles === 'object' && 
                            !('error' in route.profiles)) 
           ? route.profiles as { username: string | null; first_name: string | null; last_name: string | null }
