@@ -101,6 +101,50 @@ export type Database = {
         }
         Relationships: []
       }
+      external_job_tracking: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          external_job_id: string | null
+          external_response: Json | null
+          id: string
+          job_type: string
+          motorcycle_id: string
+          service_description: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          external_job_id?: string | null
+          external_response?: Json | null
+          id?: string
+          job_type?: string
+          motorcycle_id: string
+          service_description?: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          external_job_id?: string | null
+          external_response?: Json | null
+          id?: string
+          job_type?: string
+          motorcycle_id?: string
+          service_description?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_job_tracking_motorcycle_id_fkey"
+            columns: ["motorcycle_id"]
+            isOneToOne: false
+            referencedRelation: "motorcycles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       forum_categories: {
         Row: {
           created_at: string | null
@@ -354,6 +398,127 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "maintenance_records_motorcycle_id_fkey"
+            columns: ["motorcycle_id"]
+            isOneToOne: false
+            referencedRelation: "motorcycles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_listings: {
+        Row: {
+          accident_history: boolean | null
+          asking_price: number
+          condition_rating: number | null
+          created_at: string
+          description: string | null
+          id: string
+          images: string[] | null
+          mileage: number | null
+          modifications: string[] | null
+          motorcycle_id: string
+          recommended_price: number | null
+          seller_id: string
+          service_records_count: number | null
+          sold_at: string | null
+          sold_to: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          accident_history?: boolean | null
+          asking_price: number
+          condition_rating?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          mileage?: number | null
+          modifications?: string[] | null
+          motorcycle_id: string
+          recommended_price?: number | null
+          seller_id: string
+          service_records_count?: number | null
+          sold_at?: string | null
+          sold_to?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          accident_history?: boolean | null
+          asking_price?: number
+          condition_rating?: number | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          mileage?: number | null
+          modifications?: string[] | null
+          motorcycle_id?: string
+          recommended_price?: number | null
+          seller_id?: string
+          service_records_count?: number | null
+          sold_at?: string | null
+          sold_to?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_listings_motorcycle_id_fkey"
+            columns: ["motorcycle_id"]
+            isOneToOne: false
+            referencedRelation: "motorcycles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      motorcycle_valuations: {
+        Row: {
+          accident_history_adjustment: number | null
+          base_value: number
+          calculated_at: string
+          condition_adjustment: number | null
+          factors_used: Json | null
+          final_recommended_value: number
+          id: string
+          market_demand_adjustment: number | null
+          mileage_adjustment: number | null
+          modifications_adjustment: number | null
+          motorcycle_id: string
+          service_history_adjustment: number | null
+        }
+        Insert: {
+          accident_history_adjustment?: number | null
+          base_value: number
+          calculated_at?: string
+          condition_adjustment?: number | null
+          factors_used?: Json | null
+          final_recommended_value: number
+          id?: string
+          market_demand_adjustment?: number | null
+          mileage_adjustment?: number | null
+          modifications_adjustment?: number | null
+          motorcycle_id: string
+          service_history_adjustment?: number | null
+        }
+        Update: {
+          accident_history_adjustment?: number | null
+          base_value?: number
+          calculated_at?: string
+          condition_adjustment?: number | null
+          factors_used?: Json | null
+          final_recommended_value?: number
+          id?: string
+          market_demand_adjustment?: number | null
+          mileage_adjustment?: number | null
+          modifications_adjustment?: number | null
+          motorcycle_id?: string
+          service_history_adjustment?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "motorcycle_valuations_motorcycle_id_fkey"
             columns: ["motorcycle_id"]
             isOneToOne: false
             referencedRelation: "motorcycles"
@@ -1041,6 +1206,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_motorcycle_valuation: {
+        Args: {
+          p_motorcycle_id: string
+          p_mileage?: number
+          p_condition_rating?: number
+          p_accident_history?: boolean
+          p_service_records_count?: number
+          p_modifications?: string[]
+        }
+        Returns: number
+      }
       contains_profanity: {
         Args: { text_content: string }
         Returns: boolean

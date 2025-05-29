@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 export function MyGarage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [showAddDialog, setShowAddDialog] = useState(false);
 
   const { data: motorcycles = [], isLoading, refetch } = useQuery({
@@ -34,6 +36,32 @@ export function MyGarage() {
     },
     enabled: !!user?.id,
   });
+
+  const handleDeleteMotorcycle = async (motorcycleId: string) => {
+    try {
+      const { error } = await supabase
+        .from('motorcycles')
+        .delete()
+        .eq('id', motorcycleId)
+        .eq('owner_id', user?.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Success',
+        description: 'Motorcycle removed from garage successfully.',
+      });
+
+      refetch();
+    } catch (error) {
+      console.error('Error deleting motorcycle:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to remove motorcycle. Please try again.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -107,6 +135,7 @@ export function MyGarage() {
                     key={motorcycle.id}
                     motorcycle={motorcycle}
                     onUpdate={refetch}
+                    onDelete={() => handleDeleteMotorcycle(motorcycle.id)}
                   />
                 ))}
               </div>

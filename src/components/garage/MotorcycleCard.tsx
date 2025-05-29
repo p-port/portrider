@@ -1,123 +1,122 @@
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Bike, Calendar, Hash, Settings } from 'lucide-react';
+import { AddMaintenanceDialog } from './AddMaintenanceDialog';
+import { MotorcycleActions } from './MotorcycleActions';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { Tables } from '@/integrations/supabase/types';
-import { EditMotorcycleDialog } from './EditMotorcycleDialog';
-import { Bike, Calendar, Settings, Trash } from 'lucide-react';
-
-type Motorcycle = Tables<'motorcycles'>;
 
 interface MotorcycleCardProps {
-  motorcycle: Motorcycle;
+  motorcycle: {
+    id: string;
+    make: string;
+    model: string;
+    year: number;
+    nickname?: string;
+    image_url?: string;
+    vin?: string;
+    created_at: string;
+  };
   onUpdate: () => void;
+  onDelete?: () => void;
 }
 
-export function MotorcycleCard({ motorcycle, onUpdate }: MotorcycleCardProps) {
-  const [showEditDialog, setShowEditDialog] = useState(false);
-  const { toast } = useToast();
+export function MotorcycleCard({ motorcycle, onUpdate, onDelete }: MotorcycleCardProps) {
+  const [showMaintenanceDialog, setShowMaintenanceDialog] = useState(false);
 
-  const handleDelete = async () => {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete ${motorcycle.nickname || `${motorcycle.year} ${motorcycle.make} ${motorcycle.model}`}?`
-    );
+  // Fetch maintenance records count
+  const { data: maintenanceCount = 0 } = useQuery({
+    queryKey: ['maintenance-count', motorcycle.id],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('maintenance_records')
+        .select('*', { count: 'exact', head: true })
+        .eq('motorcycle_id', motorcycle.id);
 
-    if (!confirmed) return;
+      if (error) throw error;
+      return count || 0;
+    },
+  });
 
-    const { error } = await supabase
-      .from('motorcycles')
-      .delete()
-      .eq('id', motorcycle.id);
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete motorcycle",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: "Motorcycle deleted successfully",
-      });
-      onUpdate();
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete();
     }
   };
 
+  const displayName = motorcycle.nickname || `${motorcycle.make} ${motorcycle.model}`;
+
   return (
     <>
-      <Card className="hover:shadow-lg transition-shadow">
+      <Card className="h-full flex flex-col">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
-            <div className="flex items-center gap-2">
-              <Bike className="h-5 w-5 text-purple-600" />
-              <CardTitle className="text-lg">
-                {motorcycle.nickname || `${motorcycle.make} ${motorcycle.model}`}
-              </CardTitle>
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <Bike className="h-5 w-5 text-purple-600 flex-shrink-0" />
+              <CardTitle className="text-lg truncate">{displayName}</CardTitle>
             </div>
-            <Badge variant="secondary">{motorcycle.year}</Badge>
+            <MotorcycleActions
+              motorcycle={motorcycle}
+              serviceRecordsCount={maintenanceCount}
+              onUpdate={onUpdate}
+              onDelete={handleDelete}
+            />
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {motorcycle.image_url && (
-            <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
-              <img
-                src={motorcycle.image_url}
-                alt={`${motorcycle.make} ${motorcycle.model}`}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-          
+
+        <CardContent className="flex-1 space-y-4">
           <div className="space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Make:</span>
-              <span className="font-medium">{motorcycle.make}</span>
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Calendar className="h-4 w-4" />
+              <span>{motorcycle.year} {motorcycle.make} {motorcycle.model}</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Model:</span>
-              <span className="font-medium">{motorcycle.model}</span>
-            </div>
+
             {motorcycle.vin && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">VIN:</span>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Hash className="h-4 w-4" />
                 <span className="font-mono text-xs">{motorcycle.vin}</span>
               </div>
             )}
           </div>
 
-          <div className="flex gap-2 pt-4">
+          <div className="flex items-center justify-between pt-2">
+            <Badge variant="outline" className="text-xs">
+              {maintenanceCount} service{maintenanceCount !== 1 ? 's' : ''}
+            </Badge>
+            
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setShowEditDialog(true)}
-              className="flex-1"
+              onClick={() => setShowMaintenanceDialog(true)}
+              className="flex items-center gap-1"
             >
-              <Settings className="h-4 w-4 mr-1" />
-              Edit
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleDelete}
-              className="text-red-600 hover:text-red-700"
-            >
-              <Trash className="h-4 w-4" />
+              <Settings className="h-3 w-3" />
+              Add Service
             </Button>
           </div>
+
+          {motorcycle.image_url && (
+            <div className="mt-4">
+              <img
+                src={motorcycle.image_url}
+                alt={displayName}
+                className="w-full h-32 object-cover rounded-md"
+              />
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      <EditMotorcycleDialog
-        motorcycle={motorcycle}
-        open={showEditDialog}
-        onOpenChange={setShowEditDialog}
+      <AddMaintenanceDialog
+        open={showMaintenanceDialog}
+        onOpenChange={setShowMaintenanceDialog}
+        motorcycleId={motorcycle.id}
         onSuccess={() => {
           onUpdate();
-          setShowEditDialog(false);
+          setShowMaintenanceDialog(false);
         }}
       />
     </>
