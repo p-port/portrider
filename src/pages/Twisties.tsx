@@ -23,7 +23,7 @@ const Twisties = () => {
         .from('routes')
         .select(`
           *,
-          profiles:created_by(username, first_name, last_name)
+          profiles!routes_created_by_fkey(username, first_name, last_name)
         `)
         .eq('is_active', true);
 
@@ -54,7 +54,12 @@ const Twisties = () => {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data;
+      
+      // Transform the data to match the expected type
+      return data?.map(route => ({
+        ...route,
+        profiles: route.profiles || { username: null, first_name: null, last_name: null }
+      })) || [];
     },
   });
 
