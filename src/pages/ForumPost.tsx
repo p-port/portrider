@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { PostReactions } from '@/components/forum/PostReactions';
 import { CommentsList } from '@/components/forum/CommentsList';
 import { CommentForm } from '@/components/forum/CommentForm';
+import { FollowButton } from '@/components/forum/FollowButton';
 
 const ForumPost = () => {
   const { postId } = useParams();
@@ -126,6 +127,7 @@ const ForumPost = () => {
                   </p>
                 </div>
               </div>
+              <FollowButton userId={post.author_id} />
             </div>
           </CardHeader>
           <CardContent>

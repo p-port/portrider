@@ -359,6 +359,10 @@ export type Database = {
         Args: { user_id: string }
         Returns: Database["public"]["Enums"]["user_role"]
       }
+      join_open_group: {
+        Args: { group_id_param: string }
+        Returns: boolean
+      }
     }
     Enums: {
       user_role: "rider" | "support" | "admin"
