@@ -28,6 +28,20 @@ export function MotorcycleActions({ motorcycle, serviceRecordsCount, onUpdate, o
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showSellDialog, setShowSellDialog] = useState(false);
 
+  // Prepare motorcycle data for SellMotorcycleDialog with required fields
+  const motorcycleForSell = {
+    id: motorcycle.id,
+    make: motorcycle.make,
+    model: motorcycle.model,
+    year: motorcycle.year,
+    nickname: motorcycle.nickname || '',
+    image_url: motorcycle.image_url || '',
+    vin: motorcycle.vin || '',
+    created_at: motorcycle.created_at,
+    updated_at: motorcycle.updated_at,
+    owner_id: motorcycle.owner_id,
+  };
+
   return (
     <>
       <DropdownMenu>
@@ -65,7 +79,7 @@ export function MotorcycleActions({ motorcycle, serviceRecordsCount, onUpdate, o
       <SellMotorcycleDialog
         open={showSellDialog}
         onOpenChange={setShowSellDialog}
-        motorcycle={motorcycle}
+        motorcycle={motorcycleForSell}
         serviceRecordsCount={serviceRecordsCount}
         onSuccess={() => {
           onUpdate();

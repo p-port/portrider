@@ -20,6 +20,7 @@ interface MaintenanceTrackerProps {
 export function MaintenanceTracker({ motorcycles }: MaintenanceTrackerProps) {
   const { user } = useAuth();
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [selectedMotorcycleId, setSelectedMotorcycleId] = useState<string>('');
 
   const { data: maintenanceRecords = [], refetch } = useQuery({
     queryKey: ['maintenance_records', user?.id],
@@ -59,6 +60,18 @@ export function MaintenanceTracker({ motorcycles }: MaintenanceTrackerProps) {
     });
   };
 
+  const handleAddRecord = () => {
+    if (motorcycles.length === 1) {
+      setSelectedMotorcycleId(motorcycles[0].id);
+      setShowAddDialog(true);
+    } else {
+      // For multiple motorcycles, we'll use the first one as default
+      // In a real app, you might want to show a selection dialog first
+      setSelectedMotorcycleId(motorcycles[0]?.id || '');
+      setShowAddDialog(true);
+    }
+  };
+
   if (motorcycles.length === 0) {
     return (
       <Card>
@@ -77,7 +90,7 @@ export function MaintenanceTracker({ motorcycles }: MaintenanceTrackerProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-semibold">Maintenance Records</h2>
-        <Button onClick={() => setShowAddDialog(true)}>
+        <Button onClick={handleAddRecord}>
           <Plus className="h-4 w-4 mr-2" />
           Add Record
         </Button>
@@ -91,7 +104,7 @@ export function MaintenanceTracker({ motorcycles }: MaintenanceTrackerProps) {
             <p className="text-gray-500 mb-4 text-center">
               Start tracking your motorcycle maintenance to build a comprehensive service history.
             </p>
-            <Button onClick={() => setShowAddDialog(true)}>
+            <Button onClick={handleAddRecord}>
               <Plus className="h-4 w-4 mr-2" />
               Add First Record
             </Button>
@@ -148,15 +161,17 @@ export function MaintenanceTracker({ motorcycles }: MaintenanceTrackerProps) {
         </div>
       )}
 
-      <AddMaintenanceDialog
-        motorcycles={motorcycles}
-        open={showAddDialog}
-        onOpenChange={setShowAddDialog}
-        onSuccess={() => {
-          refetch();
-          setShowAddDialog(false);
-        }}
-      />
+      {selectedMotorcycleId && (
+        <AddMaintenanceDialog
+          motorcycleId={selectedMotorcycleId}
+          open={showAddDialog}
+          onOpenChange={setShowAddDialog}
+          onSuccess={() => {
+            refetch();
+            setShowAddDialog(false);
+          }}
+        />
+      )}
     </div>
   );
 }
