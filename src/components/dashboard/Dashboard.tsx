@@ -1,5 +1,4 @@
 
-
 import { useAuth } from '@/hooks/useAuth';
 import { DashboardCard } from './DashboardCard';
 import { Button } from '@/components/ui/button';
@@ -14,7 +13,8 @@ import {
   MapPin, 
   Ticket,
   LogOut,
-  Settings
+  Settings,
+  User
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
@@ -117,7 +117,7 @@ export function Dashboard() {
             </div>
             
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/profile')}>
                 <Avatar>
                   <AvatarImage src={profile?.avatar_url || undefined} />
                   <AvatarFallback>{getUserInitials()}</AvatarFallback>
@@ -129,6 +129,9 @@ export function Dashboard() {
               </div>
               
               <div className="flex items-center gap-2">
+                <Button variant="ghost" size="sm" onClick={() => navigate('/profile')}>
+                  <User className="h-4 w-4" />
+                </Button>
                 <Button variant="ghost" size="sm">
                   <Settings className="h-4 w-4" />
                 </Button>
