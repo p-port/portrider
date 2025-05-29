@@ -7,9 +7,10 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
+import { FollowButton } from './FollowButton';
 
 interface ForumPostCardProps {
-  post: any; // We'll use any for now since we have complex joins
+  post: any;
 }
 
 export function ForumPostCard({ post }: ForumPostCardProps) {
@@ -20,6 +21,18 @@ export function ForumPostCard({ post }: ForumPostCardProps) {
     queryFn: async () => {
       const { count } = await supabase
         .from('forum_comments')
+        .select('*', { count: 'exact', head: true })
+        .eq('post_id', post.id);
+      
+      return count || 0;
+    }
+  });
+
+  const { data: reactionCount } = useQuery({
+    queryKey: ['post-reaction-count', post.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('post_reactions')
         .select('*', { count: 'exact', head: true })
         .eq('post_id', post.id);
       
@@ -54,10 +67,15 @@ export function ForumPostCard({ post }: ForumPostCardProps) {
               )}
             </div>
             <h3 className="font-semibold text-lg text-gray-900">{post.title}</h3>
-            <div className="flex items-center space-x-2 text-sm text-gray-500 mt-1">
-              <span>by {authorName}</span>
-              <span>•</span>
-              <span>{formatDistanceToNow(new Date(post.created_at))} ago</span>
+            <div className="flex items-center justify-between mt-1">
+              <div className="flex items-center space-x-2 text-sm text-gray-500">
+                <span>by {authorName}</span>
+                <span>•</span>
+                <span>{formatDistanceToNow(new Date(post.created_at))} ago</span>
+              </div>
+              <div onClick={(e) => e.stopPropagation()}>
+                <FollowButton userId={post.author_id} />
+              </div>
             </div>
           </div>
         </div>
@@ -73,7 +91,7 @@ export function ForumPostCard({ post }: ForumPostCardProps) {
           </div>
           <div className="flex items-center space-x-1">
             <ThumbsUp className="h-4 w-4" />
-            <span>0 reactions</span>
+            <span>{reactionCount || 0} reactions</span>
           </div>
         </div>
       </CardContent>

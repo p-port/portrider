@@ -10,6 +10,7 @@ import Auth from "./pages/Auth";
 import MyGarage from "./pages/MyGarage";
 import Forum from "./pages/Forum";
 import ForumCategory from "./pages/ForumCategory";
+import ForumPost from "./pages/ForumPost";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,11 @@ const App = () => (
           <Route path="/forum/category/:categoryId" element={
             <ProtectedRoute>
               <ForumCategory />
+            </ProtectedRoute>
+          } />
+          <Route path="/forum/post/:postId" element={
+            <ProtectedRoute>
+              <ForumPost />
             </ProtectedRoute>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
