@@ -10,10 +10,12 @@ import { MotorcycleCard } from './MotorcycleCard';
 import { AddMotorcycleDialog } from './AddMotorcycleDialog';
 import { MaintenanceTracker } from './MaintenanceTracker';
 import { GarageInsights } from './GarageInsights';
-import { Plus, Bike } from 'lucide-react';
+import { Plus, Bike, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export function MyGarage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [showAddDialog, setShowAddDialog] = useState(false);
 
   const { data: motorcycles = [], isLoading, refetch } = useQuery({
@@ -35,77 +37,100 @@ export function MyGarage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">Loading your garage...</div>
+      <div className="min-h-screen bg-gradient-secondary">
+        <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8">
+          <div className="text-center">
+            <div className="animate-pulse">
+              <div className="h-8 bg-muted rounded w-48 mx-auto mb-4"></div>
+              <div className="h-4 bg-muted rounded w-32 mx-auto"></div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-3">
-          <Bike className="h-8 w-8 text-purple-600" />
-          <h1 className="text-3xl font-bold">My Garage</h1>
+    <div className="min-h-screen bg-gradient-secondary">
+      {/* Mobile-first header */}
+      <div className="bg-card border-b border-border sticky top-0 z-40">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="md:hidden">
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <Bike className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 flex-shrink-0" />
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate">My Garage</h1>
+            </div>
+            <Button onClick={() => setShowAddDialog(true)} size="sm" className="flex-shrink-0">
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Add Motorcycle</span>
+            </Button>
+          </div>
         </div>
-        <Button onClick={() => setShowAddDialog(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Motorcycle
-        </Button>
       </div>
 
-      <Tabs defaultValue="motorcycles" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="motorcycles">Motorcycles</TabsTrigger>
-          <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
-          <TabsTrigger value="insights">Insights</TabsTrigger>
-        </TabsList>
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        <Tabs defaultValue="motorcycles" className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-3 h-auto p-1">
+            <TabsTrigger value="motorcycles" className="text-xs sm:text-sm py-2">
+              Motorcycles
+            </TabsTrigger>
+            <TabsTrigger value="maintenance" className="text-xs sm:text-sm py-2">
+              Maintenance
+            </TabsTrigger>
+            <TabsTrigger value="insights" className="text-xs sm:text-sm py-2">
+              Insights
+            </TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="motorcycles" className="space-y-6">
-          {motorcycles.length === 0 ? (
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-12">
-                <Bike className="h-16 w-16 text-gray-400 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No motorcycles yet</h3>
-                <p className="text-gray-500 mb-4 text-center">
-                  Add your first motorcycle to start tracking maintenance and building your garage.
-                </p>
-                <Button onClick={() => setShowAddDialog(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Your First Motorcycle
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {motorcycles.map((motorcycle) => (
-                <MotorcycleCard
-                  key={motorcycle.id}
-                  motorcycle={motorcycle}
-                  onUpdate={refetch}
-                />
-              ))}
-            </div>
-          )}
-        </TabsContent>
+          <TabsContent value="motorcycles" className="space-y-4 sm:space-y-6">
+            {motorcycles.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-8 sm:py-12 px-4">
+                  <Bike className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400 mb-4" />
+                  <h3 className="text-lg sm:text-xl font-semibold mb-2 text-center">No motorcycles yet</h3>
+                  <p className="text-sm sm:text-base text-gray-500 mb-4 text-center max-w-md">
+                    Add your first motorcycle to start tracking maintenance and building your garage.
+                  </p>
+                  <Button onClick={() => setShowAddDialog(true)} className="w-full sm:w-auto">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Your First Motorcycle
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                {motorcycles.map((motorcycle) => (
+                  <MotorcycleCard
+                    key={motorcycle.id}
+                    motorcycle={motorcycle}
+                    onUpdate={refetch}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
 
-        <TabsContent value="maintenance">
-          <MaintenanceTracker motorcycles={motorcycles} />
-        </TabsContent>
+          <TabsContent value="maintenance">
+            <MaintenanceTracker motorcycles={motorcycles} />
+          </TabsContent>
 
-        <TabsContent value="insights">
-          <GarageInsights />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="insights">
+            <GarageInsights />
+          </TabsContent>
+        </Tabs>
 
-      <AddMotorcycleDialog
-        open={showAddDialog}
-        onOpenChange={setShowAddDialog}
-        onSuccess={() => {
-          refetch();
-          setShowAddDialog(false);
-        }}
-      />
+        <AddMotorcycleDialog
+          open={showAddDialog}
+          onOpenChange={setShowAddDialog}
+          onSuccess={() => {
+            refetch();
+            setShowAddDialog(false);
+          }}
+        />
+      </div>
     </div>
   );
 }

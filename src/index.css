@@ -103,10 +103,32 @@
     background: rgb(var(--background));
     background: var(--gradient-secondary);
     min-height: 100vh;
+    /* Better mobile scrolling */
+    -webkit-overflow-scrolling: touch;
+    /* Prevent zoom on inputs on iOS */
+    -webkit-text-size-adjust: 100%;
   }
 
   html {
     background: rgb(var(--background));
+    /* Better mobile tap targets */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Better mobile form inputs */
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Safe area handling for mobile devices */
+  @supports (padding: max(0px)) {
+    .safe-area-inset-top {
+      padding-top: max(1rem, env(safe-area-inset-top));
+    }
+    
+    .safe-area-inset-bottom {
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
   }
 
   .gradient-bg {
@@ -118,6 +140,11 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* Touch-friendly interactions */
+  .touch-manipulation {
+    touch-action: manipulation;
   }
 }
 
@@ -136,5 +163,35 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* Mobile-first responsive utilities */
+  .min-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Improve focus visibility on mobile */
+@media (hover: none) {
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid rgb(var(--primary));
+    outline-offset: 2px;
   }
 }
