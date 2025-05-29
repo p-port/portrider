@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -67,8 +66,7 @@ const Twisties = () => {
         let profileData = defaultProfileData;
         if (route.profiles && 
             typeof route.profiles === 'object' && 
-            !('error' in route.profiles) &&
-            route.profiles !== null) {
+            !('error' in route.profiles)) {
           profileData = route.profiles as { username: string | null; first_name: string | null; last_name: string | null };
         }
         

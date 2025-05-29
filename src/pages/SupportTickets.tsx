@@ -30,11 +30,11 @@ const SupportTickets = () => {
       }
 
       if (statusFilter !== 'all') {
-        query = query.eq('status', statusFilter);
+        query = query.eq('status', statusFilter as 'new' | 'in_progress' | 'resolved' | 'escalated');
       }
 
       if (categoryFilter !== 'all') {
-        query = query.eq('category', categoryFilter);
+        query = query.eq('category', categoryFilter as 'technical' | 'account' | 'billing' | 'feature_request' | 'bug_report' | 'other');
       }
 
       const { data, error } = await query;
