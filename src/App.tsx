@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -7,6 +8,8 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import MyGarage from "./pages/MyGarage";
+import Forum from "./pages/Forum";
+import ForumCategory from "./pages/ForumCategory";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +30,16 @@ const App = () => (
           <Route path="/garage" element={
             <ProtectedRoute>
               <MyGarage />
+            </ProtectedRoute>
+          } />
+          <Route path="/forum" element={
+            <ProtectedRoute>
+              <Forum />
+            </ProtectedRoute>
+          } />
+          <Route path="/forum/category/:categoryId" element={
+            <ProtectedRoute>
+              <ForumCategory />
             </ProtectedRoute>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
