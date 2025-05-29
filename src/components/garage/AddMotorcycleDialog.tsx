@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -52,7 +51,9 @@ export function AddMotorcycleDialog({ open, onOpenChange, onSuccess }: AddMotorc
     const { error } = await supabase
       .from('motorcycles')
       .insert({
-        ...data,
+        make: data.make,
+        model: data.model,
+        year: data.year,
         owner_id: user.id,
         image_url: data.image_url || null,
         vin: data.vin || null,

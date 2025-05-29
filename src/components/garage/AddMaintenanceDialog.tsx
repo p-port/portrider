@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -53,7 +52,9 @@ export function AddMaintenanceDialog({ motorcycles, open, onOpenChange, onSucces
     const { error } = await supabase
       .from('maintenance_records')
       .insert({
-        ...data,
+        motorcycle_id: data.motorcycle_id,
+        description: data.description,
+        date_performed: data.date_performed,
         mileage: data.mileage || null,
         cost: data.cost || null,
         parts_used: data.parts_used || null,
