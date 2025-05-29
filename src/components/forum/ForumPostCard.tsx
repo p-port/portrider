@@ -28,18 +28,6 @@ export function ForumPostCard({ post }: ForumPostCardProps) {
     }
   });
 
-  const { data: reactionCount } = useQuery({
-    queryKey: ['post-reaction-count', post.id],
-    queryFn: async () => {
-      const { count } = await supabase
-        .from('post_reactions')
-        .select('*', { count: 'exact', head: true })
-        .eq('post_id', post.id);
-      
-      return count || 0;
-    }
-  });
-
   const authorName = post.profiles?.username || 
     `${post.profiles?.first_name || ''} ${post.profiles?.last_name || ''}`.trim() || 
     'Anonymous';
@@ -91,7 +79,7 @@ export function ForumPostCard({ post }: ForumPostCardProps) {
           </div>
           <div className="flex items-center space-x-1">
             <ThumbsUp className="h-4 w-4" />
-            <span>{reactionCount || 0} reactions</span>
+            <span>0 reactions</span>
           </div>
         </div>
       </CardContent>
