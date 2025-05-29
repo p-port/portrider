@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -27,6 +26,25 @@ interface RouteData {
   created_by: string;
   profiles: RouteProfile | null;
 }
+
+// Helper function to safely extract profile data
+const extractProfileData = (profiles: any): RouteProfile => {
+  const defaultProfile: RouteProfile = {
+    username: null,
+    first_name: null,
+    last_name: null
+  };
+
+  if (!profiles || typeof profiles !== 'object' || Array.isArray(profiles) || 'error' in profiles) {
+    return defaultProfile;
+  }
+
+  return {
+    username: profiles.username || null,
+    first_name: profiles.first_name || null,
+    last_name: profiles.last_name || null
+  };
+};
 
 const Twisties = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -76,35 +94,11 @@ const Twisties = () => {
         throw error;
       }
       
-      // Transform the data to handle cases where profile data might be missing
-      const transformedRoutes: RouteData[] = data?.map(route => {
-        const defaultProfileData: RouteProfile = { 
-          username: null, 
-          first_name: null, 
-          last_name: null 
-        };
-        
-        // Handle profile data transformation
-        let profileData: RouteProfile = defaultProfileData;
-        
-        // Check if profiles data exists and is valid
-        const routeProfiles = route.profiles;
-        if (routeProfiles !== null && 
-            typeof routeProfiles === 'object' && 
-            !Array.isArray(routeProfiles) &&
-            !('error' in routeProfiles)) {
-          profileData = {
-            username: routeProfiles.username || null,
-            first_name: routeProfiles.first_name || null,
-            last_name: routeProfiles.last_name || null
-          };
-        }
-        
-        return {
-          ...route,
-          profiles: profileData
-        } as RouteData;
-      }) || [];
+      // Transform the data using the helper function
+      const transformedRoutes: RouteData[] = data?.map(route => ({
+        ...route,
+        profiles: extractProfileData(route.profiles)
+      })) || [];
 
       return transformedRoutes;
     },
