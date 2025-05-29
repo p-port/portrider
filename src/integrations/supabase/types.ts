@@ -447,33 +447,45 @@ export type Database = {
           business_id: string
           buyer_id: string
           created_at: string | null
+          delivery_instructions: string | null
+          estimated_delivery: string | null
           id: string
           notes: string | null
           shipping_address: Json | null
+          shipping_method: string | null
           status: string | null
           total_amount: number
+          tracking_number: string | null
           updated_at: string | null
         }
         Insert: {
           business_id: string
           buyer_id: string
           created_at?: string | null
+          delivery_instructions?: string | null
+          estimated_delivery?: string | null
           id?: string
           notes?: string | null
           shipping_address?: Json | null
+          shipping_method?: string | null
           status?: string | null
           total_amount: number
+          tracking_number?: string | null
           updated_at?: string | null
         }
         Update: {
           business_id?: string
           buyer_id?: string
           created_at?: string | null
+          delivery_instructions?: string | null
+          estimated_delivery?: string | null
           id?: string
           notes?: string | null
           shipping_address?: Json | null
+          shipping_method?: string | null
           status?: string | null
           total_amount?: number
+          tracking_number?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -486,8 +498,53 @@ export type Database = {
           },
         ]
       }
+      product_variants: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price_adjustment: number | null
+          product_id: string
+          sku: string | null
+          stock_quantity: number | null
+          value: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price_adjustment?: number | null
+          product_id: string
+          sku?: string | null
+          stock_quantity?: number | null
+          value: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price_adjustment?: number | null
+          product_id?: string
+          sku?: string | null
+          stock_quantity?: number | null
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
+          bulk_discount_tiers: Json | null
           business_id: string
           category: string
           created_at: string | null
@@ -496,12 +553,16 @@ export type Database = {
           images: string[] | null
           is_active: boolean | null
           price: number
+          promotion_end: string | null
+          promotion_start: string | null
+          promotional_price: number | null
           stock_quantity: number | null
           title: string
           updated_at: string | null
           variations: Json | null
         }
         Insert: {
+          bulk_discount_tiers?: Json | null
           business_id: string
           category: string
           created_at?: string | null
@@ -510,12 +571,16 @@ export type Database = {
           images?: string[] | null
           is_active?: boolean | null
           price: number
+          promotion_end?: string | null
+          promotion_start?: string | null
+          promotional_price?: number | null
           stock_quantity?: number | null
           title: string
           updated_at?: string | null
           variations?: Json | null
         }
         Update: {
+          bulk_discount_tiers?: Json | null
           business_id?: string
           category?: string
           created_at?: string | null
@@ -524,6 +589,9 @@ export type Database = {
           images?: string[] | null
           is_active?: boolean | null
           price?: number
+          promotion_end?: string | null
+          promotion_start?: string | null
+          promotional_price?: number | null
           stock_quantity?: number | null
           title?: string
           updated_at?: string | null
@@ -581,12 +649,53 @@ export type Database = {
         }
         Relationships: []
       }
+      review_responses: {
+        Row: {
+          created_at: string | null
+          id: string
+          responder_id: string
+          response_text: string
+          review_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          responder_id: string
+          response_text: string
+          review_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          responder_id?: string
+          response_text?: string
+          review_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_responses_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           business_id: string | null
+          business_response: string | null
+          business_response_date: string | null
           comment: string | null
           created_at: string | null
+          flagged_by: string | null
+          flagged_reason: string | null
           id: string
+          is_flagged: boolean | null
+          is_verified: boolean | null
           product_id: string | null
           rating: number
           reviewer_id: string
@@ -594,9 +703,15 @@ export type Database = {
         }
         Insert: {
           business_id?: string | null
+          business_response?: string | null
+          business_response_date?: string | null
           comment?: string | null
           created_at?: string | null
+          flagged_by?: string | null
+          flagged_reason?: string | null
           id?: string
+          is_flagged?: boolean | null
+          is_verified?: boolean | null
           product_id?: string | null
           rating: number
           reviewer_id: string
@@ -604,9 +719,15 @@ export type Database = {
         }
         Update: {
           business_id?: string | null
+          business_response?: string | null
+          business_response_date?: string | null
           comment?: string | null
           created_at?: string | null
+          flagged_by?: string | null
+          flagged_reason?: string | null
           id?: string
+          is_flagged?: boolean | null
+          is_verified?: boolean | null
           product_id?: string | null
           rating?: number
           reviewer_id?: string

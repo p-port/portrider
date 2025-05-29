@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -13,6 +14,8 @@ import ForumPost from "./pages/ForumPost";
 import Marketplace from "./pages/Marketplace";
 import RegisterBusiness from "./pages/RegisterBusiness";
 import BusinessProfile from "./pages/BusinessProfile";
+import ManageProducts from "./pages/ManageProducts";
+import ManageOrders from "./pages/ManageOrders";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +66,16 @@ const App = () => (
           <Route path="/marketplace/business/:businessId" element={
             <ProtectedRoute>
               <BusinessProfile />
+            </ProtectedRoute>
+          } />
+          <Route path="/marketplace/manage-products" element={
+            <ProtectedRoute>
+              <ManageProducts />
+            </ProtectedRoute>
+          } />
+          <Route path="/marketplace/manage-orders" element={
+            <ProtectedRoute>
+              <ManageOrders />
             </ProtectedRoute>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

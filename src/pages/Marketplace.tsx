@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, Plus, MapPin, Star } from 'lucide-react';
+import { Search, Plus, MapPin, Star, Package, ShoppingCart } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -42,6 +42,23 @@ const Marketplace = () => {
     }
   });
 
+  const { data: userBusiness } = useQuery({
+    queryKey: ['user-business', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data, error } = await supabase
+        .from('businesses')
+        .select('*')
+        .eq('owner_id', user.id)
+        .eq('status', 'approved')
+        .maybeSingle();
+      
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    },
+    enabled: !!user
+  });
+
   const categories = [
     'all',
     'parts',
@@ -72,12 +89,32 @@ const Marketplace = () => {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold text-gray-900">Marketplace</h1>
-            {user && (
-              <Button onClick={() => navigate('/marketplace/register-business')}>
-                <Plus className="h-4 w-4 mr-2" />
-                Register Business
-              </Button>
-            )}
+            <div className="flex gap-2">
+              {userBusiness && (
+                <>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => navigate('/marketplace/manage-products')}
+                  >
+                    <Package className="h-4 w-4 mr-2" />
+                    Manage Products
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => navigate('/marketplace/manage-orders')}
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    Manage Orders
+                  </Button>
+                </>
+              )}
+              {user && (
+                <Button onClick={() => navigate('/marketplace/register-business')}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Register Business
+                </Button>
+              )}
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4">
