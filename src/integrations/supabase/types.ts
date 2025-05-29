@@ -1001,6 +1001,41 @@ export type Database = {
           },
         ]
       }
+      ticket_responses: {
+        Row: {
+          created_at: string
+          id: string
+          is_staff_response: boolean
+          responder_id: string
+          response_text: string
+          ticket_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_staff_response?: boolean
+          responder_id: string
+          response_text: string
+          ticket_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_staff_response?: boolean
+          responder_id?: string
+          response_text?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_responses_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1021,6 +1056,10 @@ export type Database = {
       join_open_group: {
         Args: { group_id_param: string }
         Returns: boolean
+      }
+      sanitize_text: {
+        Args: { input_text: string }
+        Returns: string
       }
     }
     Enums: {

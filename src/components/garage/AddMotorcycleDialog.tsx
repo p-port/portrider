@@ -1,25 +1,19 @@
+
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
+import { SecureInput } from '@/components/forms/SecureInput';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
+import { useSecureMutation } from '@/hooks/useSecureQuery';
+import { supabase } from '@/integrations/supabase/client';
+import { motorcycleSchema } from '@/lib/validation';
+import type { z } from 'zod';
 
-const motorcycleSchema = z.object({
-  make: z.string().min(1, 'Make is required'),
-  model: z.string().min(1, 'Model is required'),
-  year: z.number().min(1900).max(new Date().getFullYear() + 1),
-  vin: z.string().optional(),
-  nickname: z.string().optional(),
-  image_url: z.string().url().optional().or(z.literal('')),
-});
-
-type MotorcycleForm = z.infer<typeof motorcycleSchema>;
+type MotorcycleFormData = z.infer<typeof motorcycleSchema>;
 
 interface AddMotorcycleDialogProps {
   open: boolean;
@@ -30,60 +24,59 @@ interface AddMotorcycleDialogProps {
 export function AddMotorcycleDialog({ open, onOpenChange, onSuccess }: AddMotorcycleDialogProps) {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
 
-  const form = useForm<MotorcycleForm>({
+  const form = useForm<MotorcycleFormData>({
     resolver: zodResolver(motorcycleSchema),
     defaultValues: {
       make: '',
       model: '',
       year: new Date().getFullYear(),
-      vin: '',
       nickname: '',
-      image_url: '',
+      vin: '',
     },
   });
 
-  const onSubmit = async (data: MotorcycleForm) => {
-    if (!user?.id) return;
+  const addMotorcycleMutation = useSecureMutation({
+    mutationFn: async (data: MotorcycleFormData) => {
+      if (!user?.id) throw new Error('User not authenticated');
 
-    setLoading(true);
-    const { error } = await supabase
-      .from('motorcycles')
-      .insert({
-        make: data.make,
-        model: data.model,
-        year: data.year,
-        owner_id: user.id,
-        image_url: data.image_url || null,
-        vin: data.vin || null,
-        nickname: data.nickname || null,
-      });
+      console.log('Adding motorcycle with data:', data);
+      
+      const { data: result, error } = await supabase
+        .from('motorcycles')
+        .insert({
+          ...data,
+          owner_id: user.id,
+        })
+        .select()
+        .single();
 
-    setLoading(false);
-
-    if (error) {
+      if (error) throw error;
+      return result;
+    },
+    onSuccess: () => {
       toast({
-        title: "Error",
-        description: "Failed to add motorcycle",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Success",
-        description: "Motorcycle added successfully",
+        title: 'Success',
+        description: 'Motorcycle added successfully!',
       });
       form.reset();
       onSuccess();
-    }
+    },
+    invalidateQueries: [['motorcycles', user?.id]],
+  });
+
+  const onSubmit = (data: MotorcycleFormData) => {
+    console.log('Form submitted with data:', data);
+    addMotorcycleMutation.mutate(data);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Add New Motorcycle</DialogTitle>
+          <DialogTitle>Add Motorcycle</DialogTitle>
         </DialogHeader>
+
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -93,13 +86,13 @@ export function AddMotorcycleDialog({ open, onOpenChange, onSuccess }: AddMotorc
                 <FormItem>
                   <FormLabel>Make</FormLabel>
                   <FormControl>
-                    <Input placeholder="Honda, Yamaha, Kawasaki..." {...field} />
+                    <SecureInput placeholder="e.g., Honda" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="model"
@@ -107,7 +100,7 @@ export function AddMotorcycleDialog({ open, onOpenChange, onSuccess }: AddMotorc
                 <FormItem>
                   <FormLabel>Model</FormLabel>
                   <FormControl>
-                    <Input placeholder="CBR600RR, R1, Ninja..." {...field} />
+                    <SecureInput placeholder="e.g., CBR600RR" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -121,10 +114,12 @@ export function AddMotorcycleDialog({ open, onOpenChange, onSuccess }: AddMotorc
                 <FormItem>
                   <FormLabel>Year</FormLabel>
                   <FormControl>
-                    <Input
+                    <SecureInput
                       type="number"
+                      min="1900"
+                      max={new Date().getFullYear() + 1}
                       {...field}
-                      onChange={(e) => field.onChange(parseInt(e.target.value))}
+                      onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
                     />
                   </FormControl>
                   <FormMessage />
@@ -139,7 +134,7 @@ export function AddMotorcycleDialog({ open, onOpenChange, onSuccess }: AddMotorc
                 <FormItem>
                   <FormLabel>Nickname (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="My baby, Beast, etc..." {...field} />
+                    <SecureInput placeholder="e.g., Red Rocket" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -153,33 +148,24 @@ export function AddMotorcycleDialog({ open, onOpenChange, onSuccess }: AddMotorc
                 <FormItem>
                   <FormLabel>VIN (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="17-character VIN" {...field} />
+                    <SecureInput placeholder="17-character VIN" maxLength={17} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="image_url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image URL (Optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://..." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="flex-1">
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={addMotorcycleMutation.isPending}
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading} className="flex-1">
-                {loading ? "Adding..." : "Add Motorcycle"}
+              <Button type="submit" disabled={addMotorcycleMutation.isPending}>
+                {addMotorcycleMutation.isPending ? 'Adding...' : 'Add Motorcycle'}
               </Button>
             </div>
           </form>
