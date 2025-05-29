@@ -1,8 +1,10 @@
 
+
 import { useAuth } from '@/hooks/useAuth';
 import { DashboardCard } from './DashboardCard';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { GlobalSearch } from '@/components/search/GlobalSearch';
 import { 
   Bike, 
   MessageSquare, 
@@ -103,10 +105,15 @@ export function Dashboard() {
       {/* Header */}
       <header className="bg-card shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-16 gap-4">
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
               <Bike className="h-8 w-8 text-primary" />
-              <h1 className="text-2xl font-bold text-foreground">Port Rider</h1>
+              <h1 className="text-2xl font-bold text-foreground hidden sm:block">Port Rider</h1>
+            </div>
+            
+            {/* Global Search - Center */}
+            <div className="flex-1 max-w-md mx-4">
+              <GlobalSearch />
             </div>
             
             <div className="flex items-center gap-4">
@@ -115,7 +122,7 @@ export function Dashboard() {
                   <AvatarImage src={profile?.avatar_url || undefined} />
                   <AvatarFallback>{getUserInitials()}</AvatarFallback>
                 </Avatar>
-                <div className="hidden sm:block">
+                <div className="hidden md:block">
                   <p className="text-sm font-medium text-foreground">{getUserDisplayName()}</p>
                   <p className="text-xs text-muted-foreground capitalize">{profile?.role || 'rider'}</p>
                 </div>
