@@ -9,16 +9,359 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      forum_categories: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      forum_comments: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string | null
+          id: string
+          parent_id: string | null
+          post_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          parent_id?: string | null
+          post_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          parent_id?: string | null
+          post_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "forum_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forum_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "forum_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_posts: {
+        Row: {
+          author_id: string
+          category_id: string
+          content: string
+          created_at: string | null
+          id: string
+          is_hidden: boolean | null
+          is_locked: boolean | null
+          is_pinned: boolean | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          author_id: string
+          category_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          is_hidden?: boolean | null
+          is_locked?: boolean | null
+          is_pinned?: boolean | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string
+          category_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_hidden?: boolean | null
+          is_locked?: boolean | null
+          is_pinned?: boolean | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_posts_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "forum_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string | null
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string | null
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string | null
+          role?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_requests: {
+        Row: {
+          group_id: string
+          id: string
+          requested_at: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          requested_at?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          requested_at?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_requests_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          join_type: string | null
+          leader_id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          join_type?: string | null
+          leader_id: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          join_type?: string | null
+          leader_id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      maintenance_records: {
+        Row: {
+          cost: number | null
+          created_at: string | null
+          date_performed: string
+          description: string
+          id: string
+          mileage: number | null
+          motorcycle_id: string
+          notes: string | null
+          parts_used: string | null
+        }
+        Insert: {
+          cost?: number | null
+          created_at?: string | null
+          date_performed: string
+          description: string
+          id?: string
+          mileage?: number | null
+          motorcycle_id: string
+          notes?: string | null
+          parts_used?: string | null
+        }
+        Update: {
+          cost?: number | null
+          created_at?: string | null
+          date_performed?: string
+          description?: string
+          id?: string
+          mileage?: number | null
+          motorcycle_id?: string
+          notes?: string | null
+          parts_used?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_records_motorcycle_id_fkey"
+            columns: ["motorcycle_id"]
+            isOneToOne: false
+            referencedRelation: "motorcycles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      motorcycles: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_url: string | null
+          make: string
+          model: string
+          nickname: string | null
+          owner_id: string
+          updated_at: string | null
+          vin: string | null
+          year: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          make: string
+          model: string
+          nickname?: string | null
+          owner_id: string
+          updated_at?: string | null
+          vin?: string | null
+          year: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          make?: string
+          model?: string
+          nickname?: string | null
+          owner_id?: string
+          updated_at?: string | null
+          vin?: string | null
+          year?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          dashboard_layout: Json | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          preferences: Json | null
+          role: Database["public"]["Enums"]["user_role"] | null
+          updated_at: string | null
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          dashboard_layout?: Json | null
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          preferences?: Json | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          dashboard_layout?: Json | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          preferences?: Json | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          updated_at?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: {
+        Args: { user_id: string }
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
     }
     Enums: {
-      [_ in never]: never
+      user_role: "rider" | "support" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +476,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["rider", "support", "admin"],
+    },
   },
 } as const
