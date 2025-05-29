@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,6 +9,24 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Mountain } from 'lucide-react';
 import { CreateRouteDialog } from '@/components/twisties/CreateRouteDialog';
 import { RouteCard } from '@/components/twisties/RouteCard';
+
+interface RouteProfile {
+  username: string | null;
+  first_name: string | null;
+  last_name: string | null;
+}
+
+interface RouteData {
+  id: string;
+  title: string;
+  description: string;
+  difficulty_level: string;
+  distance_km: number | null;
+  estimated_duration_hours: number | null;
+  created_at: string;
+  created_by: string;
+  profiles: RouteProfile | null;
+}
 
 const Twisties = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -57,25 +76,37 @@ const Twisties = () => {
         throw error;
       }
       
-      // Transform the data to handle cases where profile data might be missing or is an error
-      return data?.map(route => {
-        // Initialize default profile data
-        const defaultProfileData = { username: null, first_name: null, last_name: null };
+      // Transform the data to handle cases where profile data might be missing
+      const transformedRoutes: RouteData[] = data?.map(route => {
+        const defaultProfileData: RouteProfile = { 
+          username: null, 
+          first_name: null, 
+          last_name: null 
+        };
         
-        // Check if profiles exists and is not an error object
-        let profileData = defaultProfileData;
-        if (route.profiles && 
-            typeof route.profiles === 'object' && 
-            !('error' in route.profiles)) {
-          // Safe to cast since we've verified it's not null and is an object without error
-          profileData = route.profiles as { username: string | null; first_name: string | null; last_name: string | null };
+        // Handle profile data transformation
+        let profileData: RouteProfile = defaultProfileData;
+        
+        // Check if profiles data exists and is valid
+        const routeProfiles = route.profiles;
+        if (routeProfiles !== null && 
+            typeof routeProfiles === 'object' && 
+            !Array.isArray(routeProfiles) &&
+            !('error' in routeProfiles)) {
+          profileData = {
+            username: routeProfiles.username || null,
+            first_name: routeProfiles.first_name || null,
+            last_name: routeProfiles.last_name || null
+          };
         }
         
         return {
           ...route,
           profiles: profileData
-        };
+        } as RouteData;
       }) || [];
+
+      return transformedRoutes;
     },
   });
 
