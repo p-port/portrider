@@ -59,12 +59,15 @@ const Twisties = () => {
       
       // Transform the data to handle cases where profile data might be missing or is an error
       return data?.map(route => {
-        // Check if profiles is an error object or actual data
-        let profileData = { username: null, first_name: null, last_name: null };
+        // Initialize default profile data
+        const defaultProfileData = { username: null, first_name: null, last_name: null };
         
-        if (route.profiles && typeof route.profiles === 'object' && !('error' in route.profiles)) {
-          profileData = route.profiles as { username: string | null; first_name: string | null; last_name: string | null };
-        }
+        // Check if profiles exists and is not an error object
+        const profileData = (route.profiles && 
+                           typeof route.profiles === 'object' && 
+                           !('error' in route.profiles)) 
+          ? route.profiles as { username: string | null; first_name: string | null; last_name: string | null }
+          : defaultProfileData;
         
         return {
           ...route,
