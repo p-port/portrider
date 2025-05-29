@@ -9,6 +9,98 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      business_moderators: {
+        Row: {
+          business_id: string
+          created_at: string | null
+          id: string
+          invited_by: string
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          business_id: string
+          created_at?: string | null
+          id?: string
+          invited_by: string
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          business_id?: string
+          created_at?: string | null
+          id?: string
+          invited_by?: string
+          role?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_moderators_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      businesses: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          banner_url: string | null
+          category: string
+          created_at: string | null
+          description: string | null
+          email: string | null
+          id: string
+          location: string | null
+          logo_url: string | null
+          name: string
+          owner_id: string
+          phone: string | null
+          status: string | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          banner_url?: string | null
+          category: string
+          created_at?: string | null
+          description?: string | null
+          email?: string | null
+          id?: string
+          location?: string | null
+          logo_url?: string | null
+          name: string
+          owner_id: string
+          phone?: string | null
+          status?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          banner_url?: string | null
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          email?: string | null
+          id?: string
+          location?: string | null
+          logo_url?: string | null
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          status?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       forum_categories: {
         Row: {
           created_at: string | null
@@ -308,6 +400,145 @@ export type Database = {
         }
         Relationships: []
       }
+      order_items: {
+        Row: {
+          id: string
+          order_id: string
+          price: number
+          product_id: string
+          quantity: number
+          variation: Json | null
+        }
+        Insert: {
+          id?: string
+          order_id: string
+          price: number
+          product_id: string
+          quantity?: number
+          variation?: Json | null
+        }
+        Update: {
+          id?: string
+          order_id?: string
+          price?: number
+          product_id?: string
+          quantity?: number
+          variation?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          business_id: string
+          buyer_id: string
+          created_at: string | null
+          id: string
+          notes: string | null
+          shipping_address: Json | null
+          status: string | null
+          total_amount: number
+          updated_at: string | null
+        }
+        Insert: {
+          business_id: string
+          buyer_id: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          shipping_address?: Json | null
+          status?: string | null
+          total_amount: number
+          updated_at?: string | null
+        }
+        Update: {
+          business_id?: string
+          buyer_id?: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          shipping_address?: Json | null
+          status?: string | null
+          total_amount?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          business_id: string
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          images: string[] | null
+          is_active: boolean | null
+          price: number
+          stock_quantity: number | null
+          title: string
+          updated_at: string | null
+          variations: Json | null
+        }
+        Insert: {
+          business_id: string
+          category: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          is_active?: boolean | null
+          price: number
+          stock_quantity?: number | null
+          title: string
+          updated_at?: string | null
+          variations?: Json | null
+        }
+        Update: {
+          business_id?: string
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          images?: string[] | null
+          is_active?: boolean | null
+          price?: number
+          stock_quantity?: number | null
+          title?: string
+          updated_at?: string | null
+          variations?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -349,6 +580,54 @@ export type Database = {
           username?: string | null
         }
         Relationships: []
+      }
+      reviews: {
+        Row: {
+          business_id: string | null
+          comment: string | null
+          created_at: string | null
+          id: string
+          product_id: string | null
+          rating: number
+          reviewer_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          business_id?: string | null
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          product_id?: string | null
+          rating: number
+          reviewer_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          business_id?: string | null
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          product_id?: string | null
+          rating?: number
+          reviewer_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_business_id_fkey"
+            columns: ["business_id"]
+            isOneToOne: false
+            referencedRelation: "businesses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
