@@ -14,8 +14,8 @@ import { TicketCard } from '@/components/support/TicketCard';
 const SupportTickets = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
   const { data: tickets, isLoading, refetch } = useQuery({
     queryKey: ['support-tickets', searchTerm, statusFilter, categoryFilter],
