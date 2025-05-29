@@ -67,7 +67,8 @@ const Twisties = () => {
         const profiles = route.profiles;
         if (profiles && 
             typeof profiles === 'object' && 
-            !('error' in profiles)) {
+            !('error' in profiles) &&
+            profiles !== null) {
           profileData = profiles as { username: string | null; first_name: string | null; last_name: string | null };
         }
         

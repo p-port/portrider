@@ -918,6 +918,89 @@ export type Database = {
         }
         Relationships: []
       }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          category: Database["public"]["Enums"]["ticket_category"]
+          created_at: string
+          description: string
+          id: string
+          last_activity_at: string
+          priority: number
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          ticket_number: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          category: Database["public"]["Enums"]["ticket_category"]
+          created_at?: string
+          description: string
+          id?: string
+          last_activity_at?: string
+          priority?: number
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject: string
+          ticket_number?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          category?: Database["public"]["Enums"]["ticket_category"]
+          created_at?: string
+          description?: string
+          id?: string
+          last_activity_at?: string
+          priority?: number
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"]
+          subject?: string
+          ticket_number?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ticket_messages: {
+        Row: {
+          created_at: string
+          id: string
+          is_internal: boolean
+          message: string
+          sender_id: string
+          ticket_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          message: string
+          sender_id: string
+          ticket_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_internal?: boolean
+          message?: string
+          sender_id?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "support_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -941,6 +1024,14 @@ export type Database = {
       }
     }
     Enums: {
+      ticket_category:
+        | "technical"
+        | "account"
+        | "billing"
+        | "feature_request"
+        | "bug_report"
+        | "other"
+      ticket_status: "new" | "in_progress" | "resolved" | "escalated"
       user_role: "rider" | "support" | "admin"
     }
     CompositeTypes: {
@@ -1057,6 +1148,15 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ticket_category: [
+        "technical",
+        "account",
+        "billing",
+        "feature_request",
+        "bug_report",
+        "other",
+      ],
+      ticket_status: ["new", "in_progress", "resolved", "escalated"],
       user_role: ["rider", "support", "admin"],
     },
   },

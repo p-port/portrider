@@ -17,6 +17,7 @@ import BusinessProfile from "./pages/BusinessProfile";
 import ManageProducts from "./pages/ManageProducts";
 import ManageOrders from "./pages/ManageOrders";
 import Twisties from "./pages/Twisties";
+import SupportTickets from "./pages/SupportTickets";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -82,6 +83,11 @@ const App = () => (
           <Route path="/twisties" element={
             <ProtectedRoute>
               <Twisties />
+            </ProtectedRoute>
+          } />
+          <Route path="/support" element={
+            <ProtectedRoute>
+              <SupportTickets />
             </ProtectedRoute>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
