@@ -45,7 +45,11 @@ export function AddMotorcycleDialog({ open, onOpenChange, onSuccess }: AddMotorc
       const { data: result, error } = await supabase
         .from('motorcycles')
         .insert({
-          ...data,
+          make: data.make,
+          model: data.model,
+          year: data.year,
+          nickname: data.nickname || null,
+          vin: data.vin || null,
           owner_id: user.id,
         })
         .select()
