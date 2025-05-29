@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,7 +22,7 @@ const Twisties = () => {
         .from('routes')
         .select(`
           *,
-          profiles!routes_created_by_fkey(username, first_name, last_name)
+          profiles(username, first_name, last_name)
         `)
         .eq('is_active', true);
 
@@ -55,7 +54,7 @@ const Twisties = () => {
       const { data, error } = await query;
       if (error) throw error;
       
-      // Transform the data to match the expected type
+      // Transform the data to handle cases where profile data might be missing
       return data?.map(route => ({
         ...route,
         profiles: route.profiles || { username: null, first_name: null, last_name: null }
