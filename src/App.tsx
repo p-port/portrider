@@ -16,6 +16,7 @@ import RegisterBusiness from "./pages/RegisterBusiness";
 import BusinessProfile from "./pages/BusinessProfile";
 import ManageProducts from "./pages/ManageProducts";
 import ManageOrders from "./pages/ManageOrders";
+import Twisties from "./pages/Twisties";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -76,6 +77,11 @@ const App = () => (
           <Route path="/marketplace/manage-orders" element={
             <ProtectedRoute>
               <ManageOrders />
+            </ProtectedRoute>
+          } />
+          <Route path="/twisties" element={
+            <ProtectedRoute>
+              <Twisties />
             </ProtectedRoute>
           } />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -750,11 +750,187 @@ export type Database = {
           },
         ]
       }
+      route_comments: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          flagged_reason: string | null
+          id: string
+          is_flagged: boolean | null
+          rating: number
+          route_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          flagged_reason?: string | null
+          id?: string
+          is_flagged?: boolean | null
+          rating: number
+          route_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          flagged_reason?: string | null
+          id?: string
+          is_flagged?: boolean | null
+          rating?: number
+          route_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "route_comments_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      route_danger_zones: {
+        Row: {
+          created_at: string | null
+          danger_type: string
+          description: string
+          id: string
+          location: Json
+          route_id: string
+          severity: string
+        }
+        Insert: {
+          created_at?: string | null
+          danger_type: string
+          description: string
+          id?: string
+          location: Json
+          route_id: string
+          severity: string
+        }
+        Update: {
+          created_at?: string | null
+          danger_type?: string
+          description?: string
+          id?: string
+          location?: Json
+          route_id?: string
+          severity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "route_danger_zones_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      route_pit_stops: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          location: Json
+          name: string
+          order_index: number
+          route_id: string
+          type: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          location: Json
+          name: string
+          order_index: number
+          route_id: string
+          type: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          location?: Json
+          name?: string
+          order_index?: number
+          route_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "route_pit_stops_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      routes: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          description: string
+          difficulty_level: string
+          distance_km: number | null
+          end_point: Json
+          estimated_duration_hours: number | null
+          id: string
+          is_active: boolean | null
+          start_point: Json
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          description: string
+          difficulty_level: string
+          distance_km?: number | null
+          end_point: Json
+          estimated_duration_hours?: number | null
+          id?: string
+          is_active?: boolean | null
+          start_point: Json
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          description?: string
+          difficulty_level?: string
+          distance_km?: number | null
+          end_point?: Json
+          estimated_duration_hours?: number | null
+          id?: string
+          is_active?: boolean | null
+          start_point?: Json
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      contains_profanity: {
+        Args: { text_content: string }
+        Returns: boolean
+      }
+      get_route_average_rating: {
+        Args: { route_id_param: string }
+        Returns: number
+      }
       get_user_role: {
         Args: { user_id: string }
         Returns: Database["public"]["Enums"]["user_role"]
