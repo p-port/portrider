@@ -50,25 +50,25 @@
   }
 
   .dark {
-    --background: 8 8 11;
-    --foreground: 250 250 250;
+    --background: 0 0 0;
+    --foreground: 255 255 255;
 
-    --card: 15 15 18;
+    --card: 23 23 23;
     --card-foreground: 250 250 250;
 
-    --popover: 15 15 18;
+    --popover: 23 23 23;
     --popover-foreground: 250 250 250;
 
     --primary: 147 51 234;
     --primary-foreground: 255 255 255;
 
-    --secondary: 30 30 36;
+    --secondary: 39 39 42;
     --secondary-foreground: 250 250 250;
 
-    --muted: 30 30 36;
+    --muted: 39 39 42;
     --muted-foreground: 161 161 170;
 
-    --accent: 30 30 36;
+    --accent: 39 39 42;
     --accent-foreground: 250 250 250;
 
     --destructive: 220 38 38;
@@ -78,18 +78,18 @@
     --input: 39 39 42;
     --ring: 147 51 234;
 
-    --sidebar-background: 15 15 18;
+    --sidebar-background: 23 23 23;
     --sidebar-foreground: 250 250 250;
     --sidebar-primary: 147 51 234;
     --sidebar-primary-foreground: 255 255 255;
-    --sidebar-accent: 30 30 36;
+    --sidebar-accent: 39 39 42;
     --sidebar-accent-foreground: 250 250 250;
     --sidebar-border: 39 39 42;
     --sidebar-ring: 147 51 234;
 
     /* Gradient variables for dark mode */
     --gradient-primary: linear-gradient(135deg, rgb(88 28 135) 0%, rgb(157 23 77) 50%, rgb(30 64 175) 100%);
-    --gradient-secondary: linear-gradient(135deg, rgb(30 30 36) 0%, rgb(39 39 42) 50%, rgb(24 24 27) 100%);
+    --gradient-secondary: linear-gradient(135deg, rgb(23 23 23) 0%, rgb(39 39 42) 50%, rgb(15 15 15) 100%);
   }
 }
 
@@ -103,6 +103,10 @@
     background: rgb(var(--background));
     background: var(--gradient-secondary);
     min-height: 100vh;
+  }
+
+  html {
+    background: rgb(var(--background));
   }
 
   .gradient-bg {
