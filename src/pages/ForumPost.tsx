@@ -22,16 +22,11 @@ const ForumPost = () => {
   const { data: post, isLoading } = useQuery({
     queryKey: ['forum-post', postId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First get the post
+      const { data: postData, error: postError } = await supabase
         .from('forum_posts')
         .select(`
           *,
-          profiles:author_id (
-            username,
-            first_name,
-            last_name,
-            avatar_url
-          ),
           forum_categories (
             name
           )
@@ -39,8 +34,23 @@ const ForumPost = () => {
         .eq('id', postId)
         .single();
       
-      if (error) throw error;
-      return data;
+      if (postError) throw postError;
+      
+      // Then get the author profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('username, first_name, last_name, avatar_url')
+        .eq('id', postData.author_id)
+        .single();
+      
+      if (profileError) {
+        console.warn('Could not fetch profile for author:', profileError);
+      }
+      
+      return {
+        ...postData,
+        profiles: profileData
+      };
     }
   });
 
