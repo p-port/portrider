@@ -51,15 +51,13 @@ export function AddMotorcycleDialog({ open, onOpenChange, onSuccess }: AddMotorc
     setLoading(true);
     const { error } = await supabase
       .from('motorcycles')
-      .insert([
-        {
-          ...data,
-          owner_id: user.id,
-          image_url: data.image_url || null,
-          vin: data.vin || null,
-          nickname: data.nickname || null,
-        },
-      ]);
+      .insert({
+        ...data,
+        owner_id: user.id,
+        image_url: data.image_url || null,
+        vin: data.vin || null,
+        nickname: data.nickname || null,
+      });
 
     setLoading(false);
 

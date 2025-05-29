@@ -52,15 +52,13 @@ export function AddMaintenanceDialog({ motorcycles, open, onOpenChange, onSucces
     setLoading(true);
     const { error } = await supabase
       .from('maintenance_records')
-      .insert([
-        {
-          ...data,
-          mileage: data.mileage || null,
-          cost: data.cost || null,
-          parts_used: data.parts_used || null,
-          notes: data.notes || null,
-        },
-      ]);
+      .insert({
+        ...data,
+        mileage: data.mileage || null,
+        cost: data.cost || null,
+        parts_used: data.parts_used || null,
+        notes: data.notes || null,
+      });
 
     setLoading(false);
 
