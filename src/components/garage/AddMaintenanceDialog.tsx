@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,13 +8,10 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Tables } from '@/integrations/supabase/types';
 
 const maintenanceSchema = z.object({
-  motorcycle_id: z.string().min(1, 'Please select a motorcycle'),
   description: z.string().min(1, 'Description is required'),
   date_performed: z.string().min(1, 'Date is required'),
   mileage: z.number().optional(),
@@ -23,23 +21,21 @@ const maintenanceSchema = z.object({
 });
 
 type MaintenanceForm = z.infer<typeof maintenanceSchema>;
-type Motorcycle = Tables<'motorcycles'>;
 
 interface AddMaintenanceDialogProps {
-  motorcycles: Motorcycle[];
+  motorcycleId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
 }
 
-export function AddMaintenanceDialog({ motorcycles, open, onOpenChange, onSuccess }: AddMaintenanceDialogProps) {
+export function AddMaintenanceDialog({ motorcycleId, open, onOpenChange, onSuccess }: AddMaintenanceDialogProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<MaintenanceForm>({
     resolver: zodResolver(maintenanceSchema),
     defaultValues: {
-      motorcycle_id: '',
       description: '',
       date_performed: new Date().toISOString().split('T')[0],
       parts_used: '',
@@ -52,7 +48,7 @@ export function AddMaintenanceDialog({ motorcycles, open, onOpenChange, onSucces
     const { error } = await supabase
       .from('maintenance_records')
       .insert({
-        motorcycle_id: data.motorcycle_id,
+        motorcycle_id: motorcycleId,
         description: data.description,
         date_performed: data.date_performed,
         mileage: data.mileage || null,
@@ -87,31 +83,6 @@ export function AddMaintenanceDialog({ motorcycles, open, onOpenChange, onSucces
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="motorcycle_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Motorcycle</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a motorcycle" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {motorcycles.map((motorcycle) => (
-                        <SelectItem key={motorcycle.id} value={motorcycle.id}>
-                          {motorcycle.nickname || `${motorcycle.year} ${motorcycle.make} ${motorcycle.model}`}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={form.control}
               name="description"

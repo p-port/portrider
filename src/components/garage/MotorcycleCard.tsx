@@ -19,6 +19,8 @@ interface MotorcycleCardProps {
     image_url?: string;
     vin?: string;
     created_at: string;
+    updated_at: string;
+    owner_id: string;
   };
   onUpdate: () => void;
   onDelete?: () => void;

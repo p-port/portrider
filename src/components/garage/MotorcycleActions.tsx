@@ -13,6 +13,11 @@ interface MotorcycleActionsProps {
     model: string;
     year: number;
     nickname?: string;
+    image_url?: string;
+    vin?: string;
+    created_at: string;
+    updated_at: string;
+    owner_id: string;
   };
   serviceRecordsCount: number;
   onUpdate: () => void;
