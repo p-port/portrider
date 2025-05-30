@@ -86,7 +86,7 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
       setFormData({
         name: '',
         description: '',
-        joinType: 'request',
+        joinType: 'request' as const,
       });
       setErrors({});
     },
