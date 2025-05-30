@@ -1,3 +1,4 @@
+
 import { useAuth } from '@/hooks/useAuth';
 import { DashboardCard } from './DashboardCard';
 import { Button } from '@/components/ui/button';
@@ -127,8 +128,8 @@ export function Dashboard() {
       <header className="bg-card shadow-sm border-b border-border sticky top-0 z-50">
         <div className="px-3 sm:px-4 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16 gap-2 sm:gap-4">
-            {/* Logo - Always visible */}
-            <div className="flex items-center gap-2 cursor-pointer min-w-0" onClick={() => navigate('/')}>
+            {/* Logo - Always visible and clickable */}
+            <div className="flex items-center gap-2 cursor-pointer min-w-0 hover:opacity-80 transition-opacity" onClick={() => navigate('/')}>
               <Bike className="h-6 w-6 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
               <h1 className="text-lg sm:text-2xl font-bold text-foreground truncate">Port Rider</h1>
             </div>
