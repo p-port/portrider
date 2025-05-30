@@ -14,11 +14,20 @@ import { GroupCard } from '@/components/groups/GroupCard';
 import { CreateGroupDialog } from '@/components/groups/CreateGroupDialog';
 import { GroupView } from '@/components/groups/GroupView';
 
+interface Group {
+  id: string;
+  name: string;
+  description: string;
+  leader_id: string;
+  join_type: 'open' | 'request' | 'invite';
+  created_at: string;
+}
+
 const Groups = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [joinTypeFilter, setJoinTypeFilter] = useState<string>('all');
-  const [selectedGroup, setSelectedGroup] = useState<any>(null);
+  const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [joiningGroupId, setJoiningGroupId] = useState<string | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
@@ -217,6 +226,7 @@ const Groups = () => {
                 key={group.id}
                 group={{
                   ...group,
+                  join_type: group.join_type as 'open' | 'request' | 'invite',
                   member_count: group.group_members?.[0]?.count || 0,
                   upcoming_events: group.group_events?.[0]?.count || 0
                 }}

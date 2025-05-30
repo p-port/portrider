@@ -29,11 +29,6 @@ interface Comment {
   content: string;
   author_id: string;
   created_at: string;
-  profiles?: {
-    username: string;
-    first_name: string;
-    last_name: string;
-  };
 }
 
 interface ArticleViewProps {
@@ -56,14 +51,7 @@ export const ArticleView: React.FC<ArticleViewProps> = ({ article, onBack }) => 
     try {
       const { data, error } = await supabase
         .from('news_comments')
-        .select(`
-          *,
-          profiles (
-            username,
-            first_name,
-            last_name
-          )
-        `)
+        .select('*')
         .eq('article_id', article.id)
         .order('created_at', { ascending: true });
 
@@ -181,11 +169,7 @@ export const ArticleView: React.FC<ArticleViewProps> = ({ article, onBack }) => 
               <div key={comment.id} className="border-l-2 border-border pl-4">
                 <div className="flex items-center gap-2 mb-2">
                   <User className="h-4 w-4" />
-                  <span className="font-medium">
-                    {comment.profiles?.first_name && comment.profiles?.last_name
-                      ? `${comment.profiles.first_name} ${comment.profiles.last_name}`
-                      : comment.profiles?.username || 'Anonymous'}
-                  </span>
+                  <span className="font-medium">User {comment.author_id.slice(0, 8)}</span>
                   <span className="text-sm text-muted-foreground">
                     {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                   </span>

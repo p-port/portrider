@@ -23,11 +23,6 @@ interface Member {
   user_id: string;
   role: string;
   joined_at: string;
-  profiles?: {
-    username: string;
-    first_name: string;
-    last_name: string;
-  };
 }
 
 interface Event {
@@ -64,14 +59,7 @@ export const GroupView: React.FC<GroupViewProps> = ({ group, onBack }) => {
     try {
       const { data, error } = await supabase
         .from('group_members')
-        .select(`
-          *,
-          profiles (
-            username,
-            first_name,
-            last_name
-          )
-        `)
+        .select('*')
         .eq('group_id', group.id)
         .order('joined_at', { ascending: true });
 
@@ -86,10 +74,7 @@ export const GroupView: React.FC<GroupViewProps> = ({ group, onBack }) => {
     try {
       const { data, error } = await supabase
         .from('group_events')
-        .select(`
-          *,
-          group_event_participants!inner(count)
-        `)
+        .select('*')
         .eq('group_id', group.id)
         .gte('event_date', new Date().toISOString())
         .order('event_date', { ascending: true });
@@ -214,11 +199,7 @@ export const GroupView: React.FC<GroupViewProps> = ({ group, onBack }) => {
               {members.map((member) => (
                 <div key={member.id} className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">
-                      {member.profiles?.first_name && member.profiles?.last_name
-                        ? `${member.profiles.first_name} ${member.profiles.last_name}`
-                        : member.profiles?.username || 'Anonymous'}
-                    </p>
+                    <p className="font-medium">User {member.user_id.slice(0, 8)}</p>
                     <p className="text-sm text-muted-foreground">
                       Joined {formatDistanceToNow(new Date(member.joined_at), { addSuffix: true })}
                     </p>
