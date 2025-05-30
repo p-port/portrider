@@ -39,7 +39,7 @@ interface CreateGroupDialogProps {
 const getDefaultFormData = (): GroupFormData => ({
   name: '',
   description: '',
-  joinType: 'request',
+  joinType: 'request' as JoinType,
 });
 
 export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCreated }) => {
