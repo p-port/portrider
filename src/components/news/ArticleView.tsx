@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useBackNavigation } from '@/utils/navigation';
 
 interface NewsArticle {
   id: string;
@@ -42,6 +42,7 @@ export const ArticleView: React.FC<ArticleViewProps> = ({ article, onBack }) => 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
+  const { goBack } = useBackNavigation();
 
   useEffect(() => {
     fetchComments();
@@ -106,40 +107,6 @@ export const ArticleView: React.FC<ArticleViewProps> = ({ article, onBack }) => 
         <ArrowLeft className="h-4 w-4" />
         Back to News
       </Button>
-
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between mb-4">
-            <Badge variant="secondary" className="capitalize">
-              {article.category}
-            </Badge>
-            {article.is_featured && (
-              <Badge variant="default">Featured</Badge>
-            )}
-          </div>
-          <CardTitle className="text-3xl">{article.title}</CardTitle>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Calendar className="h-4 w-4" />
-              {formatDistanceToNow(new Date(article.published_at || article.created_at), { addSuffix: true })}
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {article.image_url && (
-            <div className="w-full h-64 mb-6 overflow-hidden rounded-lg">
-              <img 
-                src={article.image_url} 
-                alt={article.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          )}
-          <div className="prose max-w-none">
-            <div className="whitespace-pre-wrap">{article.content}</div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Comments Section */}
       <Card>

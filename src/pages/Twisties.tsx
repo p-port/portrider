@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Mountain, ArrowLeft } from 'lucide-react';
 import { CreateRouteDialog } from '@/components/twisties/CreateRouteDialog';
 import { RouteCard } from '@/components/twisties/RouteCard';
-import { useNavigate } from 'react-router-dom';
+import { useBackNavigation } from '@/utils/navigation';
 
 interface RouteProfile {
   username: string | null;
@@ -30,6 +29,7 @@ interface RouteData {
 }
 
 const Twisties = () => {
+  const { goBack } = useBackNavigation();
   const navigate = useNavigate();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -122,7 +122,7 @@ const Twisties = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate(-1)}
+                onClick={goBack}
                 className="text-muted-foreground hover:text-foreground"
               >
                 <ArrowLeft className="h-4 w-4" />

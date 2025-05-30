@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -8,10 +8,11 @@ import { ArrowLeft, Plus } from 'lucide-react';
 import { ForumPostList } from '@/components/forum/ForumPostList';
 import { CreatePostDialog } from '@/components/forum/CreatePostDialog';
 import { useAuth } from '@/hooks/useAuth';
+import { useBackNavigation } from '@/utils/navigation';
 
 const ForumCategory = () => {
   const { categoryId } = useParams();
-  const navigate = useNavigate();
+  const { goBack } = useBackNavigation();
   const { user } = useAuth();
   const [showCreatePost, setShowCreatePost] = useState(false);
 
@@ -37,7 +38,7 @@ const ForumCategory = () => {
             <div className="flex items-center space-x-4">
               <Button 
                 variant="ghost" 
-                onClick={() => navigate('/forum')}
+                onClick={goBack}
                 className="flex items-center space-x-2"
               >
                 <ArrowLeft className="h-4 w-4" />
