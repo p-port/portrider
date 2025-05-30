@@ -35,19 +35,16 @@ interface CreateGroupDialogProps {
   onGroupCreated?: () => void;
 }
 
-// Default form data with proper typing
-const getDefaultFormData = (): GroupFormData => ({
-  name: '',
-  description: '',
-  joinType: 'request' as JoinType,
-});
-
 export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCreated }) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState<GroupFormData>(getDefaultFormData());
+  const [formData, setFormData] = useState<GroupFormData>({
+    name: '',
+    description: '',
+    joinType: 'request' as JoinType,
+  });
   const [errors, setErrors] = useState<Partial<GroupFormData>>({});
 
   const validateForm = () => {
@@ -132,7 +129,11 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
       queryClient.invalidateQueries({ queryKey: ['groups'] });
       onGroupCreated?.();
       setOpen(false);
-      setFormData(getDefaultFormData());
+      setFormData({
+        name: '',
+        description: '',
+        joinType: 'request' as JoinType,
+      });
       setErrors({});
     },
     onError: (error) => {
