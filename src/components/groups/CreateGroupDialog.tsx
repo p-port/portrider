@@ -39,7 +39,7 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
   const [formData, setFormData] = useState<GroupFormData>({
     name: '',
     description: '',
-    joinType: 'request' as const,
+    joinType: 'request',
   });
   const [errors, setErrors] = useState<Partial<GroupFormData>>({});
 
@@ -87,7 +87,7 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
       setFormData({
         name: '',
         description: '',
-        joinType: 'request' as const,
+        joinType: 'request',
       });
       setErrors({});
     },
