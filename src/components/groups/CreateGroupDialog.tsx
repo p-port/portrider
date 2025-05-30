@@ -39,7 +39,7 @@ interface CreateGroupDialogProps {
 const getDefaultFormData = (): GroupFormData => ({
   name: '',
   description: '',
-  joinType: 'request' as const,
+  joinType: 'request',
 });
 
 export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCreated }) => {
@@ -72,16 +72,57 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
     mutationFn: async (data: GroupFormData) => {
       if (!user) throw new Error('User not authenticated');
 
-      const { error } = await supabase
+      console.log('Creating group with data:', data);
+
+      // First create the group
+      const { data: groupData, error: groupError } = await supabase
         .from('groups')
         .insert({
           name: data.name,
           description: data.description,
           leader_id: user.id,
           join_type: data.joinType,
-        });
+        })
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (groupError) {
+        console.error('Group creation error:', groupError);
+        throw groupError;
+      }
+
+      console.log('Group created successfully:', groupData);
+
+      // The trigger should automatically add the leader as a member
+      // But let's verify it worked by checking if the member record exists
+      const { data: memberCheck, error: memberError } = await supabase
+        .from('group_members')
+        .select('*')
+        .eq('group_id', groupData.id)
+        .eq('user_id', user.id)
+        .eq('role', 'leader')
+        .maybeSingle();
+
+      if (memberError) {
+        console.error('Member check error:', memberError);
+      } else if (!memberCheck) {
+        console.warn('Leader membership not created by trigger, creating manually');
+        // If trigger didn't work, create the membership manually
+        const { error: manualMemberError } = await supabase
+          .from('group_members')
+          .insert({
+            group_id: groupData.id,
+            user_id: user.id,
+            role: 'leader',
+          });
+
+        if (manualMemberError) {
+          console.error('Manual member creation error:', manualMemberError);
+          throw manualMemberError;
+        }
+      }
+
+      return groupData;
     },
     onSuccess: () => {
       toast({
