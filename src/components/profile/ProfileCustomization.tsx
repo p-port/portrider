@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
@@ -31,11 +30,12 @@ import {
 } from 'lucide-react';
 
 export function ProfileCustomization() {
-  const { user, profile } = useAuth();
+  const { user, profile, refreshProfile } = useAuth();
   const { preferences, updatePreferences, loading: preferencesLoading } = useUserPreferences();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [formData, setFormData] = useState({
     username: profile?.username || '',
     first_name: profile?.first_name || '',
@@ -62,29 +62,65 @@ export function ProfileCustomization() {
     const file = event.target.files?.[0];
     if (!file || !user) return;
 
-    setLoading(true);
+    // Validate file type and size
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select an image file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      toast({
+        title: "File too large",
+        description: "Please select an image smaller than 5MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadingImage(true);
     try {
+      // Create a unique filename
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
-      
-      // For now, we'll use a placeholder URL since storage isn't set up
-      // In a real implementation, you'd upload to Supabase Storage
-      const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${fileName}`;
-      
-      setFormData(prev => ({ ...prev, avatar_url: avatarUrl }));
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      // Upload the file to Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('profile-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Get the public URL for the uploaded image
+      const { data: { publicUrl } } = supabase.storage
+        .from('profile-images')
+        .getPublicUrl(filePath);
+
+      // Update the form data with the new image URL
+      setFormData(prev => ({ ...prev, avatar_url: publicUrl }));
       
       toast({
         title: "Image uploaded",
-        description: "Profile picture updated successfully.",
+        description: "Profile picture uploaded successfully.",
       });
     } catch (error) {
+      console.error('Upload error:', error);
       toast({
         title: "Upload failed",
-        description: "Failed to upload profile picture.",
+        description: "Failed to upload profile picture. Please try again.",
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setUploadingImage(false);
     }
   };
 
@@ -107,11 +143,15 @@ export function ProfileCustomization() {
 
       if (error) throw error;
 
+      // Refresh the profile data
+      await refreshProfile();
+
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
       });
     } catch (error) {
+      console.error('Profile update error:', error);
       toast({
         title: "Update failed",
         description: "Failed to update profile. Please try again.",
@@ -166,16 +206,19 @@ export function ProfileCustomization() {
           <CardContent className="space-y-4">
             <div className="flex flex-col items-center space-y-4">
               <Avatar className="h-32 w-32">
-                <AvatarImage src={formData.avatar_url || undefined} />
+                <AvatarImage 
+                  src={formData.avatar_url || undefined} 
+                  alt="Profile picture"
+                />
                 <AvatarFallback className="text-2xl">{getUserInitials()}</AvatarFallback>
               </Avatar>
               
               <div className="flex flex-col items-center space-y-2">
                 <Label htmlFor="avatar-upload" className="cursor-pointer">
-                  <Button variant="outline" size="sm" asChild>
+                  <Button variant="outline" size="sm" asChild disabled={uploadingImage}>
                     <span>
                       <Camera className="h-4 w-4 mr-2" />
-                      Change Picture
+                      {uploadingImage ? 'Uploading...' : 'Change Picture'}
                     </span>
                   </Button>
                 </Label>
@@ -185,7 +228,11 @@ export function ProfileCustomization() {
                   accept="image/*"
                   className="hidden"
                   onChange={handleImageUpload}
+                  disabled={uploadingImage}
                 />
+                <p className="text-xs text-muted-foreground text-center">
+                  Max file size: 5MB
+                </p>
               </div>
             </div>
 
