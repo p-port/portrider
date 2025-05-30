@@ -108,7 +108,7 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
     }
   };
 
-  const handleInputChange = (field: keyof GroupFormData, value: string) => {
+  const handleInputChange = (field: 'name' | 'description', value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
