@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -7,15 +6,17 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Ticket } from 'lucide-react';
+import { Plus, Search, Ticket, ArrowLeft } from 'lucide-react';
 import { CreateTicketDialog } from '@/components/support/CreateTicketDialog';
 import { TicketCard } from '@/components/support/TicketCard';
+import { useNavigate } from 'react-router-dom';
 
 const SupportTickets = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const navigate = useNavigate();
 
   const { data: tickets, isLoading, refetch } = useQuery({
     queryKey: ['support-tickets', searchTerm, statusFilter, categoryFilter],
@@ -69,11 +70,22 @@ const SupportTickets = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Support Tickets</h1>
-          <p className="text-muted-foreground">
-            Submit and track your support requests
-          </p>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Support Tickets</h1>
+            <p className="text-muted-foreground">
+              Submit and track your support requests
+            </p>
+          </div>
         </div>
         <Button onClick={() => setIsCreateDialogOpen(true)} className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
