@@ -5,18 +5,47 @@ import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { SecureInput, SecureTextarea } from '@/components/forms/SecureInput';
+import { z } from 'zod';
+
+const businessSchema = z.object({
+  name: z.string()
+    .min(2, 'Business name must be at least 2 characters')
+    .max(100, 'Business name must be less than 100 characters')
+    .regex(/^[a-zA-Z0-9\s\-_.,&()]+$/, 'Business name contains invalid characters'),
+  description: z.string()
+    .max(1000, 'Description must be less than 1,000 characters')
+    .optional(),
+  category: z.string().min(1, 'Category is required'),
+  location: z.string()
+    .max(100, 'Location must be less than 100 characters')
+    .regex(/^[a-zA-Z0-9\s\-_.,()]+$/, 'Location contains invalid characters')
+    .optional(),
+  phone: z.string()
+    .regex(/^[\+]?[\d\s\-\(\)]{10,}$/, 'Invalid phone format')
+    .optional()
+    .or(z.literal('')),
+  email: z.string()
+    .email('Invalid email format')
+    .optional()
+    .or(z.literal('')),
+  website: z.string()
+    .url('Invalid website URL')
+    .optional()
+    .or(z.literal('')),
+});
+
+type BusinessFormData = z.infer<typeof businessSchema>;
 
 const RegisterBusiness = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<BusinessFormData>({
     name: '',
     description: '',
     category: '',
@@ -25,6 +54,7 @@ const RegisterBusiness = () => {
     email: '',
     website: ''
   });
+  const [errors, setErrors] = useState<Partial<BusinessFormData>>({});
 
   const categories = [
     'parts',
@@ -35,8 +65,26 @@ const RegisterBusiness = () => {
     'tools'
   ];
 
+  const validateForm = () => {
+    try {
+      businessSchema.parse(formData);
+      setErrors({});
+      return true;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldErrors: Partial<BusinessFormData> = {};
+        error.errors.forEach((err) => {
+          const field = err.path[0] as keyof BusinessFormData;
+          fieldErrors[field] = err.message;
+        });
+        setErrors(fieldErrors);
+      }
+      return false;
+    }
+  };
+
   const registerMutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
+    mutationFn: async (data: BusinessFormData) => {
       if (!user) throw new Error('User not authenticated');
 
       const { error } = await supabase
@@ -64,11 +112,17 @@ const RegisterBusiness = () => {
       toast.error('Please fill in all required fields');
       return;
     }
-    registerMutation.mutate(formData);
+    if (validateForm()) {
+      registerMutation.mutate(formData);
+    }
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: keyof BusinessFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: undefined }));
+    }
   };
 
   if (!user) {
@@ -113,13 +167,16 @@ const RegisterBusiness = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="name">Business Name *</Label>
-                  <Input
+                  <SecureInput
                     id="name"
                     value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    onValueChange={(value) => handleInputChange('name', value)}
                     placeholder="Enter your business name"
-                    required
+                    className={errors.name ? 'border-red-500' : ''}
                   />
+                  {errors.name && (
+                    <p className="text-sm text-red-500">{errors.name}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -128,7 +185,7 @@ const RegisterBusiness = () => {
                     value={formData.category} 
                     onValueChange={(value) => handleInputChange('category', value)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className={errors.category ? 'border-red-500' : ''}>
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -139,61 +196,84 @@ const RegisterBusiness = () => {
                       ))}
                     </SelectContent>
                   </Select>
+                  {errors.category && (
+                    <p className="text-sm text-red-500">{errors.category}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="location">Location</Label>
-                  <Input
+                  <SecureInput
                     id="location"
                     value={formData.location}
-                    onChange={(e) => handleInputChange('location', e.target.value)}
+                    onValueChange={(value) => handleInputChange('location', value)}
                     placeholder="City, State"
+                    className={errors.location ? 'border-red-500' : ''}
                   />
+                  {errors.location && (
+                    <p className="text-sm text-red-500">{errors.location}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone</Label>
-                  <Input
+                  <SecureInput
                     id="phone"
                     type="tel"
                     value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    onValueChange={(value) => handleInputChange('phone', value)}
                     placeholder="(555) 123-4567"
+                    className={errors.phone ? 'border-red-500' : ''}
                   />
+                  {errors.phone && (
+                    <p className="text-sm text-red-500">{errors.phone}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input
+                  <SecureInput
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    onValueChange={(value) => handleInputChange('email', value)}
                     placeholder="business@example.com"
+                    className={errors.email ? 'border-red-500' : ''}
                   />
+                  {errors.email && (
+                    <p className="text-sm text-red-500">{errors.email}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="website">Website</Label>
-                  <Input
+                  <SecureInput
                     id="website"
                     type="url"
                     value={formData.website}
-                    onChange={(e) => handleInputChange('website', e.target.value)}
+                    onValueChange={(value) => handleInputChange('website', value)}
                     placeholder="https://www.yourbusiness.com"
+                    className={errors.website ? 'border-red-500' : ''}
                   />
+                  {errors.website && (
+                    <p className="text-sm text-red-500">{errors.website}</p>
+                  )}
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="description">Business Description</Label>
-                <Textarea
+                <SecureTextarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  onValueChange={(value) => handleInputChange('description', value)}
                   placeholder="Tell us about your business, what you sell, and what makes you special..."
                   rows={4}
+                  className={errors.description ? 'border-red-500' : ''}
                 />
+                {errors.description && (
+                  <p className="text-sm text-red-500">{errors.description}</p>
+                )}
               </div>
 
               <div className="flex justify-end space-x-4">
