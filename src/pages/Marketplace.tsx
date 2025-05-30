@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, Plus, MapPin, Star, Package, ShoppingCart } from 'lucide-react';
+import { Search, Plus, MapPin, Star, Package, ShoppingCart, ArrowLeft, Home } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -77,18 +77,38 @@ const Marketplace = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-secondary flex items-center justify-center">
         <div className="text-lg">Loading marketplace...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-gradient-secondary">
+      <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">Marketplace</h1>
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate(-1)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate('/')}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Home className="h-4 w-4" />
+                </Button>
+              </div>
+              <h1 className="text-3xl font-bold text-foreground">Marketplace</h1>
+            </div>
             <div className="flex gap-2">
               {userBusiness && (
                 <>
@@ -119,7 +139,7 @@ const Marketplace = () => {
 
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search businesses..."
                 value={searchTerm}
@@ -158,14 +178,14 @@ const Marketplace = () => {
                           {business.category}
                         </Badge>
                         {business.location && (
-                          <div className="flex items-center text-sm text-gray-500 mb-2">
+                          <div className="flex items-center text-sm text-muted-foreground mb-2">
                             <MapPin className="h-4 w-4 mr-1" />
                             {business.location}
                           </div>
                         )}
                         <div className="flex items-center">
                           <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                          <span className="text-sm text-gray-600">
+                          <span className="text-sm text-muted-foreground">
                             {calculateAverageRating(business.reviews)} 
                             ({business.reviews?.length || 0} reviews)
                           </span>
@@ -181,7 +201,7 @@ const Marketplace = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-600 text-sm line-clamp-3">
+                    <p className="text-muted-foreground text-sm line-clamp-3">
                       {business.description}
                     </p>
                   </CardContent>
@@ -191,8 +211,8 @@ const Marketplace = () => {
           </div>
         ) : (
           <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No businesses found</h3>
-            <p className="text-gray-500 mb-4">
+            <h3 className="text-lg font-medium text-foreground mb-2">No businesses found</h3>
+            <p className="text-muted-foreground mb-4">
               {searchTerm || selectedCategory !== 'all' 
                 ? 'Try adjusting your search or filters' 
                 : 'Be the first to register your business!'}

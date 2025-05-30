@@ -1,4 +1,3 @@
-
 import { useAuth } from '@/hooks/useAuth';
 import { DashboardCard } from './DashboardCard';
 import { Button } from '@/components/ui/button';
@@ -42,14 +41,14 @@ const dashboardItems = [
     title: 'News',
     description: 'Latest motorcycle news and updates',
     icon: Newspaper,
-    comingSoon: true,
+    route: '/news',
   },
   {
     id: 'groups',
     title: 'Groups / Clubs',
     description: 'Join motorcycle groups and clubs',
     icon: Users,
-    comingSoon: true,
+    route: '/groups',
   },
   {
     id: 'marketplace',
@@ -81,12 +80,7 @@ export function Dashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleCardClick = (item: typeof dashboardItems[0]) => {
-    if (item.comingSoon) {
-      toast({
-        title: "Feature Coming Soon",
-        description: `${item.title} feature is currently being developed.`,
-      });
-    } else if (item.route) {
+    if (item.route) {
       navigate(item.route);
     }
   };

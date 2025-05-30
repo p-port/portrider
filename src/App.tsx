@@ -21,6 +21,8 @@ import ManageProducts from "./pages/ManageProducts";
 import ManageOrders from "./pages/ManageOrders";
 import Twisties from "./pages/Twisties";
 import SupportTickets from "./pages/SupportTickets";
+import News from "./pages/News";
+import Groups from "./pages/Groups";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -100,7 +102,7 @@ const App = () => (
                 }
               />
               <Route
-                path="/register-business"
+                path="/marketplace/register-business"
                 element={
                   <ProtectedRoute>
                     <RegisterBusiness />
@@ -108,7 +110,7 @@ const App = () => (
                 }
               />
               <Route
-                path="/manage-products"
+                path="/marketplace/manage-products"
                 element={
                   <ProtectedRoute>
                     <ManageProducts />
@@ -116,7 +118,7 @@ const App = () => (
                 }
               />
               <Route
-                path="/manage-orders"
+                path="/marketplace/manage-orders"
                 element={
                   <ProtectedRoute>
                     <ManageOrders />
@@ -136,6 +138,22 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <SupportTickets />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/news"
+                element={
+                  <ProtectedRoute>
+                    <News />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/groups"
+                element={
+                  <ProtectedRoute>
+                    <Groups />
                   </ProtectedRoute>
                 }
               />
