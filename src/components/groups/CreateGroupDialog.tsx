@@ -117,9 +117,9 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
   };
 
   const handleJoinTypeChange = (value: string) => {
-    // Type assertion after validation
+    // Explicit type guard with type assertion
     if (value === 'open' || value === 'request' || value === 'invite') {
-      setFormData(prev => ({ ...prev, joinType: value }));
+      setFormData(prev => ({ ...prev, joinType: value as 'open' | 'request' | 'invite' }));
       if (errors.joinType) {
         setErrors(prev => ({ ...prev, joinType: undefined }));
       }
