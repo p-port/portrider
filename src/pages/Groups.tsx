@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, ArrowLeft, Home, Search } from 'lucide-react';
+import { Users, ArrowLeft, Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -129,24 +128,14 @@ const Groups = () => {
       <div className="bg-card border-b border-border">
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate(-1)}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate('/')}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <Home className="h-4 w-4" />
-              </Button>
-            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(-1)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
             <div className="flex items-center space-x-3">
               <Users className="h-8 w-8 text-primary" />
               <div>

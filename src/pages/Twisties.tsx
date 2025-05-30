@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Mountain, ArrowLeft, Home } from 'lucide-react';
+import { Plus, Mountain, ArrowLeft } from 'lucide-react';
 import { CreateRouteDialog } from '@/components/twisties/CreateRouteDialog';
 import { RouteCard } from '@/components/twisties/RouteCard';
 import { useNavigate } from 'react-router-dom';
@@ -112,24 +112,14 @@ const Twisties = () => {
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate(-1)}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate('/')}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <Home className="h-4 w-4" />
-                </Button>
-              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate(-1)}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
               <div>
                 <h1 className="text-3xl font-bold text-foreground">Twisties</h1>
                 <p className="text-muted-foreground">
