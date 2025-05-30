@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -39,7 +38,7 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
   const [formData, setFormData] = useState<GroupFormData>({
     name: '',
     description: '',
-    joinType: 'request',
+    joinType: 'request' as const,
   });
   const [errors, setErrors] = useState<Partial<GroupFormData>>({});
 
