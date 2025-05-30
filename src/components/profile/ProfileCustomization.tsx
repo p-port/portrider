@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 import { 
   User, 
   Mail, 
@@ -25,13 +26,15 @@ import {
   Shield,
   Zap,
   Settings,
-  Bell
+  Bell,
+  ArrowLeft
 } from 'lucide-react';
 
 export function ProfileCustomization() {
   const { user, profile } = useAuth();
   const { preferences, updatePreferences, loading: preferencesLoading } = useUserPreferences();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: profile?.username || '',
@@ -137,6 +140,15 @@ export function ProfileCustomization() {
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="flex items-center gap-3 mb-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/')}
+          className="mr-2"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
         <User className="h-8 w-8 text-primary" />
         <div>
           <h1 className="text-3xl font-bold text-foreground">Profile Settings</h1>
