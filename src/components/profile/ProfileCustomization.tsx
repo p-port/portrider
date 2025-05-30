@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserPreferences } from '@/hooks/useUserPreferences';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { 
   User, 
@@ -20,11 +23,14 @@ import {
   Award,
   Star,
   Shield,
-  Zap
+  Zap,
+  Settings,
+  Bell
 } from 'lucide-react';
 
 export function ProfileCustomization() {
   const { user, profile } = useAuth();
+  const { preferences, updatePreferences, loading: preferencesLoading } = useUserPreferences();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -120,13 +126,21 @@ export function ProfileCustomization() {
     return user?.email?.[0]?.toUpperCase() || 'U';
   };
 
+  if (preferencesLoading) {
+    return (
+      <div className="max-w-4xl mx-auto p-6 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       <div className="flex items-center gap-3 mb-6">
         <User className="h-8 w-8 text-primary" />
         <div>
           <h1 className="text-3xl font-bold text-foreground">Profile Settings</h1>
-          <p className="text-muted-foreground">Customize your profile information and badges</p>
+          <p className="text-muted-foreground">Customize your profile information and preferences</p>
         </div>
       </div>
 
@@ -236,6 +250,82 @@ export function ProfileCustomization() {
               <Save className="h-4 w-4 mr-2" />
               {loading ? 'Saving...' : 'Save Profile'}
             </Button>
+          </CardContent>
+        </Card>
+
+        {/* User Preferences */}
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Settings className="h-6 w-6" />
+              Preferences
+            </CardTitle>
+            <CardDescription>Manage your app preferences and notification settings</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="theme">Theme</Label>
+                  <Select
+                    value={preferences.theme}
+                    onValueChange={(value: 'light' | 'dark') => 
+                      updatePreferences({ theme: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="light">Light</SelectItem>
+                      <SelectItem value="dark">Dark</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label className="flex items-center gap-2">
+                      <Bell className="h-4 w-4" />
+                      Push Notifications
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      Receive push notifications for important updates
+                    </p>
+                  </div>
+                  <Switch
+                    checked={preferences.notifications.push}
+                    onCheckedChange={(checked) =>
+                      updatePreferences({
+                        notifications: { ...preferences.notifications, push: checked }
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label className="flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      Email Notifications
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      Receive email notifications for updates
+                    </p>
+                  </div>
+                  <Switch
+                    checked={preferences.notifications.email}
+                    onCheckedChange={(checked) =>
+                      updatePreferences({
+                        notifications: { ...preferences.notifications, email: checked }
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
