@@ -20,6 +20,7 @@ import RegisterBusiness from "./pages/RegisterBusiness";
 import ManageProducts from "./pages/ManageProducts";
 import ManageOrders from "./pages/ManageOrders";
 import Twisties from "./pages/Twisties";
+import RouteDetails from "./pages/RouteDetails";
 import SupportTickets from "./pages/SupportTickets";
 import News from "./pages/News";
 import Groups from "./pages/Groups";
@@ -130,6 +131,14 @@ const App = () => (
                 element={
                   <ProtectedRoute>
                     <Twisties />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/twisties/route/:routeId"
+                element={
+                  <ProtectedRoute>
+                    <RouteDetails />
                   </ProtectedRoute>
                 }
               />
