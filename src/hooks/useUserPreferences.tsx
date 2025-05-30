@@ -42,10 +42,10 @@ export function useUserPreferences() {
   useEffect(() => {
     if (profile) {
       if (profile.preferences) {
-        setPreferences(profile.preferences as UserPreferences);
+        setPreferences(profile.preferences as unknown as UserPreferences);
       }
       if (profile.dashboard_layout) {
-        setDashboardLayout(profile.dashboard_layout as DashboardLayout);
+        setDashboardLayout(profile.dashboard_layout as unknown as DashboardLayout);
       }
       setLoading(false);
     }
