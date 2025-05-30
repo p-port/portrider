@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,6 @@ import { ArrowLeft, MapPin, Clock, Mountain, User, Star, Calendar } from 'lucide
 import { RoutePhotos } from '@/components/twisties/RoutePhotos';
 import { RoutePitStops } from '@/components/twisties/RoutePitStops';
 import { RouteDangerZones } from '@/components/twisties/RouteDangerZones';
-import { useBackNavigation } from '@/utils/navigation';
 
 interface RouteDetailsData {
   id: string;
@@ -34,7 +33,7 @@ interface RouteDetailsData {
 
 const RouteDetails = () => {
   const { routeId } = useParams<{ routeId: string }>();
-  const { goBack } = useBackNavigation();
+  const navigate = useNavigate();
 
   const { data: route, isLoading, error } = useQuery({
     queryKey: ['route', routeId],
@@ -112,7 +111,7 @@ const RouteDetails = () => {
   };
 
   const handleBackClick = () => {
-    goBack();
+    navigate('/twisties');
   };
 
   if (isLoading) {
