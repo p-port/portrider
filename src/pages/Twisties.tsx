@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,25 +29,6 @@ interface RouteData {
   profiles: RouteProfile | null;
 }
 
-// Helper function to safely extract profile data
-const extractProfileData = (profiles: any): RouteProfile => {
-  const defaultProfile: RouteProfile = {
-    username: null,
-    first_name: null,
-    last_name: null
-  };
-
-  if (!profiles || typeof profiles !== 'object' || Array.isArray(profiles) || 'error' in profiles) {
-    return defaultProfile;
-  }
-
-  return {
-    username: profiles.username || null,
-    first_name: profiles.first_name || null,
-    last_name: profiles.last_name || null
-  };
-};
-
 const Twisties = () => {
   const navigate = useNavigate();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -57,11 +39,13 @@ const Twisties = () => {
   const { data: routes, isLoading, refetch } = useQuery({
     queryKey: ['routes', searchTerm, difficultyFilter, sortBy],
     queryFn: async () => {
+      console.log('Fetching routes with filters:', { searchTerm, difficultyFilter, sortBy });
+      
       let query = supabase
         .from('routes')
         .select(`
           *,
-          profiles!routes_created_by_fkey(username, first_name, last_name)
+          profiles!inner(username, first_name, last_name)
         `)
         .eq('is_active', true);
 
@@ -91,17 +75,24 @@ const Twisties = () => {
       }
 
       const { data, error } = await query;
+      
       if (error) {
-        console.log('Supabase query error:', error);
+        console.error('Supabase query error:', error);
         throw error;
       }
       
-      // Transform the data using the helper function
-      const transformedRoutes: RouteData[] = data?.map(route => ({
-        ...route,
-        profiles: extractProfileData(route.profiles)
-      })) || [];
+      console.log('Raw routes data:', data);
+      
+      // Transform the data to ensure consistent structure
+      const transformedRoutes: RouteData[] = data?.map(route => {
+        console.log('Processing route:', route.id, 'profiles:', route.profiles);
+        return {
+          ...route,
+          profiles: route.profiles || null
+        };
+      }) || [];
 
+      console.log('Transformed routes:', transformedRoutes);
       return transformedRoutes;
     },
   });
