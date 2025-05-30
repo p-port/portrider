@@ -117,10 +117,12 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
   };
 
   const handleJoinTypeChange = (value: string) => {
-    const joinType = value as 'open' | 'request' | 'invite';
-    setFormData(prev => ({ ...prev, joinType }));
-    if (errors.joinType) {
-      setErrors(prev => ({ ...prev, joinType: undefined }));
+    // Ensure the value is one of the allowed types
+    if (value === 'open' || value === 'request' || value === 'invite') {
+      setFormData(prev => ({ ...prev, joinType: value }));
+      if (errors.joinType) {
+        setErrors(prev => ({ ...prev, joinType: undefined }));
+      }
     }
   };
 
