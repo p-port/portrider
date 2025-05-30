@@ -116,6 +116,14 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
     }
   };
 
+  const handleJoinTypeChange = (value: string) => {
+    const joinType = value as 'open' | 'request' | 'invite';
+    setFormData(prev => ({ ...prev, joinType }));
+    if (errors.joinType) {
+      setErrors(prev => ({ ...prev, joinType: undefined }));
+    }
+  };
+
   if (!user) {
     return (
       <Button disabled>
@@ -157,7 +165,7 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
               <Label htmlFor="joinType">Join Type *</Label>
               <Select 
                 value={formData.joinType} 
-                onValueChange={(value) => handleInputChange('joinType', value)}
+                onValueChange={handleJoinTypeChange}
               >
                 <SelectTrigger className={errors.joinType ? 'border-red-500' : ''}>
                   <SelectValue placeholder="Select join type" />

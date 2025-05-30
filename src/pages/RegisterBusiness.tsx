@@ -87,12 +87,22 @@ const RegisterBusiness = () => {
     mutationFn: async (data: BusinessFormData) => {
       if (!user) throw new Error('User not authenticated');
 
+      // Ensure required fields are present and properly typed
+      const businessData = {
+        name: data.name,
+        description: data.description || null,
+        category: data.category,
+        location: data.location || null,
+        phone: data.phone || null,
+        email: data.email || null,
+        website: data.website || null,
+        owner_id: user.id,
+        status: 'pending' as const
+      };
+
       const { error } = await supabase
         .from('businesses')
-        .insert({
-          ...data,
-          owner_id: user.id
-        });
+        .insert(businessData);
 
       if (error) throw error;
     },

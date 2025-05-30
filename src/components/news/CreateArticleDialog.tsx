@@ -30,7 +30,15 @@ const articleSchema = z.object({
 
 type ArticleFormData = z.infer<typeof articleSchema>;
 
-export const CreateArticleDialog = () => {
+interface CreateArticleDialogProps {
+  onArticleCreated?: () => void;
+  categories?: Array<{ id: string; name: string; description?: string }>;
+}
+
+export const CreateArticleDialog: React.FC<CreateArticleDialogProps> = ({ 
+  onArticleCreated, 
+  categories = [] 
+}) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -46,7 +54,7 @@ export const CreateArticleDialog = () => {
   const [isPublished, setIsPublished] = useState(false);
   const [errors, setErrors] = useState<Partial<ArticleFormData>>({});
 
-  const categories = [
+  const defaultCategories = [
     'industry',
     'releases', 
     'events',
@@ -54,6 +62,10 @@ export const CreateArticleDialog = () => {
     'safety',
     'general'
   ];
+
+  const availableCategories = categories.length > 0 
+    ? categories.map(cat => cat.name) 
+    : defaultCategories;
 
   const validateForm = () => {
     try {
@@ -99,6 +111,7 @@ export const CreateArticleDialog = () => {
         description: 'Article created successfully!',
       });
       queryClient.invalidateQueries({ queryKey: ['news-articles'] });
+      onArticleCreated?.();
       setOpen(false);
       setFormData({
         title: '',
@@ -176,7 +189,7 @@ export const CreateArticleDialog = () => {
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((category) => (
+                  {availableCategories.map((category) => (
                     <SelectItem key={category} value={category} className="capitalize">
                       {category}
                     </SelectItem>
