@@ -39,7 +39,7 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
   const [formData, setFormData] = useState<GroupFormData>({
     name: '',
     description: '',
-    joinType: 'request',
+    joinType: 'request' as const,
   });
   const [errors, setErrors] = useState<Partial<GroupFormData>>({});
 
@@ -87,7 +87,7 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
       setFormData({
         name: '',
         description: '',
-        joinType: 'request',
+        joinType: 'request' as const,
       });
       setErrors({});
     },
@@ -119,7 +119,7 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
   const handleJoinTypeChange = (value: string) => {
     // Ensure the value is one of the allowed types
     if (value === 'open' || value === 'request' || value === 'invite') {
-      setFormData(prev => ({ ...prev, joinType: value }));
+      setFormData(prev => ({ ...prev, joinType: value as 'open' | 'request' | 'invite' }));
       if (errors.joinType) {
         setErrors(prev => ({ ...prev, joinType: undefined }));
       }

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -106,6 +105,12 @@ export const CreateRouteDialog = ({ isOpen, onClose, onRouteCreated }: CreateRou
     e.preventDefault();
     if (!user) return;
 
+    // Validate required fields
+    if (!title.trim() || !description.trim() || description.length < 50 || !startAddress.trim() || !endAddress.trim() || !difficulty) {
+      toast.error('Please fill in all required fields and ensure description is at least 50 characters');
+      return;
+    }
+
     // Check for profanity
     const textToCheck = `${title} ${description}`;
     const { data: hasProfanity } = await supabase.rpc('contains_profanity', { text_content: textToCheck });
@@ -181,6 +186,14 @@ export const CreateRouteDialog = ({ isOpen, onClose, onRouteCreated }: CreateRou
       setIsSubmitting(false);
     }
   };
+
+  // Calculate if form is valid for submit button
+  const isFormValid = title.trim() !== '' && 
+                     description.trim() !== '' && 
+                     description.length >= 50 && 
+                     startAddress.trim() !== '' && 
+                     endAddress.trim() !== '' && 
+                     difficulty !== '';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -461,7 +474,7 @@ export const CreateRouteDialog = ({ isOpen, onClose, onRouteCreated }: CreateRou
             </Button>
             <Button 
               type="submit" 
-              disabled={isSubmitting || description.length < 50}
+              disabled={isSubmitting || !isFormValid}
             >
               {isSubmitting ? 'Submitting...' : 'Submit Route'}
             </Button>
