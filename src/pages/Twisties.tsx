@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -45,7 +44,7 @@ const Twisties = () => {
         .from('routes')
         .select(`
           *,
-          profiles!inner(username, first_name, last_name)
+          profiles(username, first_name, last_name)
         `)
         .eq('is_active', true);
 
