@@ -1174,6 +1174,44 @@ export type Database = {
           },
         ]
       }
+      route_photos: {
+        Row: {
+          caption: string | null
+          created_at: string
+          id: string
+          order_index: number
+          photo_url: string
+          route_id: string
+          uploaded_by: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          order_index?: number
+          photo_url: string
+          route_id: string
+          uploaded_by: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          id?: string
+          order_index?: number
+          photo_url?: string
+          route_id?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "route_photos_route_id_fkey"
+            columns: ["route_id"]
+            isOneToOne: false
+            referencedRelation: "routes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       route_pit_stops: {
         Row: {
           created_at: string | null

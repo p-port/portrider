@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, MapPin, Clock, Mountain, User, Star, Calendar } from 'lucide-react';
+import { RoutePhotos } from '@/components/twisties/RoutePhotos';
+import { RoutePitStops } from '@/components/twisties/RoutePitStops';
+import { RouteDangerZones } from '@/components/twisties/RouteDangerZones';
 
 interface RouteDetailsData {
   id: string;
@@ -24,6 +27,9 @@ interface RouteDetailsData {
     first_name: string | null;
     last_name: string | null;
   } | null;
+  route_photos: any[];
+  route_pit_stops: any[];
+  route_danger_zones: any[];
 }
 
 const RouteDetails = () => {
@@ -37,10 +43,15 @@ const RouteDetails = () => {
 
       console.log('Fetching route details for:', routeId);
 
-      // Get route details
+      // Get route details with related data
       const { data: routeData, error: routeError } = await supabase
         .from('routes')
-        .select('*')
+        .select(`
+          *,
+          route_photos(*),
+          route_pit_stops(*),
+          route_danger_zones(*)
+        `)
         .eq('id', routeId)
         .eq('is_active', true)
         .single();
@@ -174,6 +185,11 @@ const RouteDetails = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Route Photos */}
+            {route.route_photos && route.route_photos.length > 0 && (
+              <RoutePhotos photos={route.route_photos} />
+            )}
+
             <Card>
               <CardHeader>
                 <CardTitle>Route Description</CardTitle>
@@ -212,6 +228,16 @@ const RouteDetails = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Pit Stops */}
+            {route.route_pit_stops && route.route_pit_stops.length > 0 && (
+              <RoutePitStops pitStops={route.route_pit_stops} />
+            )}
+
+            {/* Danger Zones */}
+            {route.route_danger_zones && route.route_danger_zones.length > 0 && (
+              <RouteDangerZones dangerZones={route.route_danger_zones} />
+            )}
 
             <Card>
               <CardHeader>
