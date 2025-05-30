@@ -35,36 +35,42 @@ const dashboardItems = [
     title: 'Forums',
     description: 'Connect with the motorcycle community',
     icon: MessageSquare,
+    route: '/forum',
   },
   {
     id: 'news',
     title: 'News',
     description: 'Latest motorcycle news and updates',
     icon: Newspaper,
+    comingSoon: true,
   },
   {
     id: 'groups',
     title: 'Groups / Clubs',
     description: 'Join motorcycle groups and clubs',
     icon: Users,
+    comingSoon: true,
   },
   {
     id: 'marketplace',
     title: 'Marketplace',
     description: 'Buy and sell motorcycle gear',
     icon: ShoppingBag,
+    route: '/marketplace',
   },
   {
     id: 'twisties',
     title: 'Twisties',
     description: 'Discover amazing motorcycle routes',
     icon: MapPin,
+    route: '/twisties',
   },
   {
     id: 'tickets',
     title: 'Support',
     description: 'Get help and submit support tickets',
     icon: Ticket,
+    route: '/support',
   },
 ];
 
@@ -74,14 +80,14 @@ export function Dashboard() {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleCardClick = (cardId: string, route?: string) => {
-    if (route) {
-      navigate(route);
-    } else {
+  const handleCardClick = (item: typeof dashboardItems[0]) => {
+    if (item.comingSoon) {
       toast({
         title: "Feature Coming Soon",
-        description: `${cardId.replace('_', ' ')} feature is currently being developed.`,
+        description: `${item.title} feature is currently being developed.`,
       });
+    } else if (item.route) {
+      navigate(item.route);
     }
   };
 
@@ -215,7 +221,7 @@ export function Dashboard() {
               title={item.title}
               description={item.description}
               icon={item.icon}
-              onClick={() => handleCardClick(item.id, item.route)}
+              onClick={() => handleCardClick(item)}
               className="bg-card border-border"
             />
           ))}
