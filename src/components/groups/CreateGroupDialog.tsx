@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,6 +11,10 @@ import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { SecureInput, SecureTextarea } from '@/components/forms/SecureInput';
 import { z } from 'zod';
+
+// Define the join type as a const assertion to ensure type safety
+const JOIN_TYPES = ['open', 'request', 'invite'] as const;
+type JoinType = typeof JOIN_TYPES[number];
 
 const groupSchema = z.object({
   name: z.string()
@@ -30,16 +35,19 @@ interface CreateGroupDialogProps {
   onGroupCreated?: () => void;
 }
 
+// Default form data with proper typing
+const getDefaultFormData = (): GroupFormData => ({
+  name: '',
+  description: '',
+  joinType: 'request' as const,
+});
+
 export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCreated }) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState<GroupFormData>({
-    name: '',
-    description: '',
-    joinType: 'request' as const,
-  });
+  const [formData, setFormData] = useState<GroupFormData>(getDefaultFormData());
   const [errors, setErrors] = useState<Partial<GroupFormData>>({});
 
   const validateForm = () => {
@@ -83,11 +91,7 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
       queryClient.invalidateQueries({ queryKey: ['groups'] });
       onGroupCreated?.();
       setOpen(false);
-      setFormData({
-        name: '',
-        description: '',
-        joinType: 'request',
-      });
+      setFormData(getDefaultFormData());
       setErrors({});
     },
     onError: (error) => {
@@ -116,9 +120,9 @@ export const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({ onGroupCre
   };
 
   const handleJoinTypeChange = (value: string) => {
-    // Explicit type guard with type assertion
-    if (value === 'open' || value === 'request' || value === 'invite') {
-      setFormData(prev => ({ ...prev, joinType: value as 'open' | 'request' | 'invite' }));
+    // Type guard to ensure the value is a valid join type
+    if (JOIN_TYPES.includes(value as JoinType)) {
+      setFormData(prev => ({ ...prev, joinType: value as JoinType }));
       if (errors.joinType) {
         setErrors(prev => ({ ...prev, joinType: undefined }));
       }
