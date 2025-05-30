@@ -1,6 +1,8 @@
+
 import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserPreferences } from '@/hooks/useUserPreferences';
+import { useLanguage } from '@/hooks/useLanguage';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,12 +28,14 @@ import {
   Zap,
   Settings,
   Bell,
-  ArrowLeft
+  ArrowLeft,
+  Globe
 } from 'lucide-react';
 
 export function ProfileCustomization() {
   const { user, profile, refreshProfile } = useAuth();
   const { preferences, updatePreferences, loading: preferencesLoading } = useUserPreferences();
+  const { language, setLanguage, t } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -46,10 +50,10 @@ export function ProfileCustomization() {
 
   // Mock badges data - in a real app, this would come from the database
   const availableBadges = [
-    { id: 'early_adopter', name: 'Early Adopter', icon: Star, color: 'bg-yellow-500' },
-    { id: 'verified', name: 'Verified Rider', icon: Shield, color: 'bg-blue-500' },
-    { id: 'active_member', name: 'Active Member', icon: Zap, color: 'bg-green-500' },
-    { id: 'contributor', name: 'Top Contributor', icon: Award, color: 'bg-purple-500' },
+    { id: 'early_adopter', name: t('profile.badges.earlyAdopter'), icon: Star, color: 'bg-yellow-500' },
+    { id: 'verified', name: t('profile.badges.verified'), icon: Shield, color: 'bg-blue-500' },
+    { id: 'active_member', name: t('profile.badges.activeMember'), icon: Zap, color: 'bg-green-500' },
+    { id: 'contributor', name: t('profile.badges.contributor'), icon: Award, color: 'bg-purple-500' },
   ];
 
   const userBadges = ['early_adopter', 'verified']; // Mock user badges
@@ -65,8 +69,8 @@ export function ProfileCustomization() {
     // Validate file type and size
     if (!file.type.startsWith('image/')) {
       toast({
-        title: "Invalid file type",
-        description: "Please select an image file.",
+        title: t('toast.invalidFile'),
+        description: t('toast.invalidFile.desc'),
         variant: "destructive",
       });
       return;
@@ -74,8 +78,8 @@ export function ProfileCustomization() {
 
     if (file.size > 5 * 1024 * 1024) { // 5MB limit
       toast({
-        title: "File too large",
-        description: "Please select an image smaller than 5MB.",
+        title: t('toast.fileTooLarge'),
+        description: t('toast.fileTooLarge.desc'),
         variant: "destructive",
       });
       return;
@@ -109,14 +113,14 @@ export function ProfileCustomization() {
       setFormData(prev => ({ ...prev, avatar_url: publicUrl }));
       
       toast({
-        title: "Image uploaded",
-        description: "Profile picture uploaded successfully.",
+        title: t('toast.imageUploaded'),
+        description: t('toast.imageUploaded.desc'),
       });
     } catch (error) {
       console.error('Upload error:', error);
       toast({
-        title: "Upload failed",
-        description: "Failed to upload profile picture. Please try again.",
+        title: t('toast.uploadFailed'),
+        description: t('toast.uploadFailed.desc'),
         variant: "destructive",
       });
     } finally {
@@ -147,14 +151,14 @@ export function ProfileCustomization() {
       await refreshProfile();
 
       toast({
-        title: "Profile updated",
-        description: "Your profile has been updated successfully.",
+        title: t('toast.profileUpdated'),
+        description: t('toast.profileUpdated.desc'),
       });
     } catch (error) {
       console.error('Profile update error:', error);
       toast({
-        title: "Update failed",
-        description: "Failed to update profile. Please try again.",
+        title: t('toast.updateFailed'),
+        description: t('toast.updateFailed.desc'),
         variant: "destructive",
       });
     } finally {
@@ -187,12 +191,12 @@ export function ProfileCustomization() {
           className="mr-2"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
+          {t('profile.back')}
         </Button>
         <User className="h-8 w-8 text-primary" />
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Profile Settings</h1>
-          <p className="text-muted-foreground">Customize your profile information and preferences</p>
+          <h1 className="text-3xl font-bold text-foreground">{t('profile.title')}</h1>
+          <p className="text-muted-foreground">{t('profile.subtitle')}</p>
         </div>
       </div>
 
@@ -200,8 +204,8 @@ export function ProfileCustomization() {
         {/* Profile Picture & Basic Info */}
         <Card className="lg:col-span-1">
           <CardHeader>
-            <CardTitle>Profile Picture</CardTitle>
-            <CardDescription>Upload and manage your profile picture</CardDescription>
+            <CardTitle>{t('profile.picture.title')}</CardTitle>
+            <CardDescription>{t('profile.picture.subtitle')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col items-center space-y-4">
@@ -218,7 +222,7 @@ export function ProfileCustomization() {
                   <Button variant="outline" size="sm" asChild disabled={uploadingImage}>
                     <span>
                       <Camera className="h-4 w-4 mr-2" />
-                      {uploadingImage ? 'Uploading...' : 'Change Picture'}
+                      {uploadingImage ? t('profile.picture.uploading') : t('profile.picture.change')}
                     </span>
                   </Button>
                 </Label>
@@ -231,7 +235,7 @@ export function ProfileCustomization() {
                   disabled={uploadingImage}
                 />
                 <p className="text-xs text-muted-foreground text-center">
-                  Max file size: 5MB
+                  {t('profile.picture.maxSize')}
                 </p>
               </div>
             </div>
@@ -243,7 +247,7 @@ export function ProfileCustomization() {
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="h-4 w-4" />
-                Member since {new Date(profile?.created_at || '').toLocaleDateString()}
+                {t('profile.memberSince')} {new Date(profile?.created_at || '').toLocaleDateString()}
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4" />
@@ -256,58 +260,58 @@ export function ProfileCustomization() {
         {/* Profile Details Form */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Profile Information</CardTitle>
-            <CardDescription>Update your personal information and bio</CardDescription>
+            <CardTitle>{t('profile.info.title')}</CardTitle>
+            <CardDescription>{t('profile.info.subtitle')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username">{t('profile.username')}</Label>
                 <Input
                   id="username"
                   value={formData.username}
                   onChange={(e) => handleInputChange('username', e.target.value)}
-                  placeholder="Enter username"
+                  placeholder={t('profile.username.placeholder')}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="first_name">First Name</Label>
+                <Label htmlFor="first_name">{t('profile.firstName')}</Label>
                 <Input
                   id="first_name"
                   value={formData.first_name}
                   onChange={(e) => handleInputChange('first_name', e.target.value)}
-                  placeholder="Enter first name"
+                  placeholder={t('profile.firstName.placeholder')}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="last_name">Last Name</Label>
+              <Label htmlFor="last_name">{t('profile.lastName')}</Label>
               <Input
                 id="last_name"
                 value={formData.last_name}
                 onChange={(e) => handleInputChange('last_name', e.target.value)}
-                placeholder="Enter last name"
+                placeholder={t('profile.lastName.placeholder')}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
+              <Label htmlFor="bio">{t('profile.bio')}</Label>
               <Textarea
                 id="bio"
                 value={formData.bio}
                 onChange={(e) => handleInputChange('bio', e.target.value)}
-                placeholder="Tell us about yourself and your riding experience..."
+                placeholder={t('profile.bio.placeholder')}
                 rows={4}
               />
               <p className="text-xs text-muted-foreground">
-                {formData.bio.length}/500 characters
+                {formData.bio.length}/500 {t('profile.bio.characters')}
               </p>
             </div>
 
             <Button onClick={handleSaveProfile} disabled={loading} className="w-full">
               <Save className="h-4 w-4 mr-2" />
-              {loading ? 'Saving...' : 'Save Profile'}
+              {loading ? t('profile.saving') : t('profile.save')}
             </Button>
           </CardContent>
         </Card>
@@ -317,15 +321,15 @@ export function ProfileCustomization() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Settings className="h-6 w-6" />
-              Preferences
+              {t('profile.preferences.title')}
             </CardTitle>
-            <CardDescription>Manage your app preferences and notification settings</CardDescription>
+            <CardDescription>{t('profile.preferences.subtitle')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="theme">Theme</Label>
+                  <Label htmlFor="theme">{t('profile.theme')}</Label>
                   <Select
                     value={preferences.theme}
                     onValueChange={(value: 'light' | 'dark') => 
@@ -336,22 +340,41 @@ export function ProfileCustomization() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="light">Light</SelectItem>
-                      <SelectItem value="dark">Dark</SelectItem>
+                      <SelectItem value="light">{t('profile.theme.light')}</SelectItem>
+                      <SelectItem value="dark">{t('profile.theme.dark')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="language" className="flex items-center gap-2">
+                    <Globe className="h-4 w-4" />
+                    {t('profile.language')}
+                  </Label>
+                  <Select
+                    value={language}
+                    onValueChange={(value: 'en' | 'ko') => setLanguage(value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">{t('profile.language.english')}</SelectItem>
+                      <SelectItem value="ko">{t('profile.language.korean')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-4 md:col-span-2">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label className="flex items-center gap-2">
                       <Bell className="h-4 w-4" />
-                      Push Notifications
+                      {t('profile.notifications.push')}
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Receive push notifications for important updates
+                      {t('profile.notifications.push.subtitle')}
                     </p>
                   </div>
                   <Switch
@@ -368,10 +391,10 @@ export function ProfileCustomization() {
                   <div className="space-y-0.5">
                     <Label className="flex items-center gap-2">
                       <Mail className="h-4 w-4" />
-                      Email Notifications
+                      {t('profile.notifications.email')}
                     </Label>
                     <p className="text-sm text-muted-foreground">
-                      Receive email notifications for updates
+                      {t('profile.notifications.email.subtitle')}
                     </p>
                   </div>
                   <Switch
@@ -391,8 +414,8 @@ export function ProfileCustomization() {
         {/* Badges Section */}
         <Card className="lg:col-span-3">
           <CardHeader>
-            <CardTitle>Your Badges</CardTitle>
-            <CardDescription>Achievements and recognition you've earned</CardDescription>
+            <CardTitle>{t('profile.badges.title')}</CardTitle>
+            <CardDescription>{t('profile.badges.subtitle')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -422,7 +445,7 @@ export function ProfileCustomization() {
                       </Badge>
                       {hasEarned && (
                         <p className="text-xs text-center text-muted-foreground">
-                          Earned
+                          {t('profile.badges.earned')}
                         </p>
                       )}
                     </div>
