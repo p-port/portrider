@@ -41,56 +41,72 @@ const Twisties = () => {
     queryFn: async () => {
       console.log('Fetching routes with filters:', { searchTerm, difficultyFilter, sortBy });
       
-      let query = supabase
+      // First get routes
+      let routeQuery = supabase
         .from('routes')
-        .select(`
-          *,
-          profiles!routes_created_by_fkey(username, first_name, last_name)
-        `)
+        .select('*')
         .eq('is_active', true);
 
       if (searchTerm) {
-        query = query.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+        routeQuery = routeQuery.or(`title.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
       }
 
       if (difficultyFilter !== 'all') {
-        query = query.eq('difficulty_level', difficultyFilter);
+        routeQuery = routeQuery.eq('difficulty_level', difficultyFilter);
       }
 
       switch (sortBy) {
         case 'oldest':
-          query = query.order('created_at', { ascending: true });
+          routeQuery = routeQuery.order('created_at', { ascending: true });
           break;
         case 'distance_asc':
-          query = query.order('distance_km', { ascending: true });
+          routeQuery = routeQuery.order('distance_km', { ascending: true });
           break;
         case 'distance_desc':
-          query = query.order('distance_km', { ascending: false });
+          routeQuery = routeQuery.order('distance_km', { ascending: false });
           break;
         case 'difficulty':
-          query = query.order('difficulty_level', { ascending: true });
+          routeQuery = routeQuery.order('difficulty_level', { ascending: true });
           break;
         default:
-          query = query.order('created_at', { ascending: false });
+          routeQuery = routeQuery.order('created_at', { ascending: false });
       }
 
-      const { data, error } = await query;
+      const { data: routesData, error: routesError } = await routeQuery;
       
-      if (error) {
-        console.error('Supabase query error:', error);
-        throw error;
+      if (routesError) {
+        console.error('Routes query error:', routesError);
+        throw routesError;
       }
       
-      console.log('Raw routes data:', data);
-      
-      // Transform the data to ensure consistent structure
-      const transformedRoutes: RouteData[] = data?.map(route => {
-        console.log('Processing route:', route.id, 'profiles:', route.profiles);
+      if (!routesData || routesData.length === 0) {
+        return [];
+      }
+
+      // Get user profiles for the route creators
+      const userIds = [...new Set(routesData.map(route => route.created_by))];
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, username, first_name, last_name')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.error('Profiles query error:', profilesError);
+        // Continue without profiles data rather than throwing
+      }
+
+      // Combine routes with profile data
+      const transformedRoutes: RouteData[] = routesData.map(route => {
+        const profile = profilesData?.find(p => p.id === route.created_by);
         return {
           ...route,
-          profiles: route.profiles || null
+          profiles: profile ? {
+            username: profile.username,
+            first_name: profile.first_name,
+            last_name: profile.last_name
+          } : null
         };
-      }) || [];
+      });
 
       console.log('Transformed routes:', transformedRoutes);
       return transformedRoutes;
