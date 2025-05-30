@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -111,6 +110,10 @@ const RouteDetails = () => {
     });
   };
 
+  const handleBackClick = () => {
+    navigate('/twisties');
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-secondary">
@@ -162,7 +165,7 @@ const RouteDetails = () => {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate('/twisties')}
+              onClick={handleBackClick}
               className="text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4" />
