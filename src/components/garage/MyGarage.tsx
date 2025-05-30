@@ -85,8 +85,9 @@ export function MyGarage() {
         <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-              <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="md:hidden">
+              <Button variant="ghost" size="sm" onClick={() => navigate('/')}>
                 <ArrowLeft className="h-4 w-4" />
+                <span className="hidden sm:inline ml-2">Back</span>
               </Button>
               <Bike className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600 flex-shrink-0" />
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate">My Garage</h1>
